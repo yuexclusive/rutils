@@ -1,3 +1,11 @@
 [workspace]
 
-members = ["./json", "./example","./time"]
+members = [
+    "./json",
+    "./time",
+    "./algorithm",
+    "./rocket_demo",
+    "./clap_demo",
+    "./design_pattern",
+    "./diesel_demo",
+]
