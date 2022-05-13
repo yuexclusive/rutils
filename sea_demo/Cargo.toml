@@ -1,0 +1,13 @@
+[package]
+name = "sea_demo"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+
+async-std = { version = "^1.9", features = [ "attributes", "tokio1" ] }
+sea-orm = { version = "^0", features = [ "sqlx-all", "runtime-async-std-native-tls" ] }
+serde_json = { version = "^1" }
+futures = { version = "^0.3" }
+async-stream = { version = "^0.3" }
+futures-util = { version = "^0.3" }
