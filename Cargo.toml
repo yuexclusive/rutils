@@ -7,5 +7,5 @@ members = [
     "./rocket_demo",
     "./clap_demo",
     "./design_pattern",
-    "./sea_demo",
+    "./sql_demo",
 ]
