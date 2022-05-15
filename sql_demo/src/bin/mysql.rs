@@ -2,7 +2,7 @@
 #![allow(unused)]
 extern crate tokio;
 
-use sqlx::{mysql::MySqlPoolOptions, MySql, Pool, Row};
+use sqlx::{mysql::MySqlPool, MySql, Pool};
 
 #[tokio::main]
 // or #[tokio::main]
@@ -14,10 +14,7 @@ async fn main() -> Result<(), sqlx::Error> {
 async fn pool() -> Result<Pool<MySql>, sqlx::Error> {
     let url_key = "DATABASE_URL";
     let conn_str = std::env::var(url_key).expect(&format!("failed to get env {}", url_key));
-    MySqlPoolOptions::new()
-        .max_connections(10)
-        .connect(&conn_str)
-        .await
+    MySqlPool::connect(&conn_str).await
 }
 
 #[derive(Debug)]
@@ -71,7 +68,6 @@ async fn delete(id: i32) -> Result<u64, sqlx::Error> {
 
 #[cfg(test)]
 mod tests {
-
     use super::*;
     use std::time::{self, Duration, SystemTime};
 
@@ -103,7 +99,7 @@ mod tests {
     #[tokio::test]
     async fn test_update() -> Result<(), sqlx::Error> {
         let id = last().await?.id;
-        let res = update(id,"Blueberry").await?;
+        let res = update(id, "Blueberry").await?;
         println!("rows_affected: {}", res);
         Ok(())
     }

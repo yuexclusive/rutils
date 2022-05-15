@@ -8,11 +8,9 @@ CREATE TABLE `cake` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
-INSERT INTO sea_demo.cake (name) VALUES
-	 ('New York Cheese'),
-	 ('Chocolate Forest'),
-	 ('test'),
-	 ('test');
+INSERT INTO cake (id,name) VALUES
+	 (1,'New York Cheese'),
+	 (2,'Chocolate Forest')
 
 drop table if exists `fruit`;
 
