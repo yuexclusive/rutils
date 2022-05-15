@@ -42,7 +42,7 @@ impl Time {
     }
 
     pub fn date(&self) -> String {
-        self.now.format("%Y-%m-%d").to_string()
+        format!("test for {}", self.now.format("%Y-%m-%d").to_string())
     }
 
     pub fn year(&self) -> i32 {
@@ -111,9 +111,12 @@ mod tests {
         println!("weekday is {}", now().weekday());
         let a = std::time::SystemTime::now();
         std::thread::sleep(std::time::Duration::from_secs(1));
-        let res = std::time::SystemTime::now().duration_since(a).unwrap().as_nanos();
+        let res = std::time::SystemTime::now()
+            .duration_since(a)
+            .unwrap()
+            .as_nanos();
 
         let x = std::time::SystemTime::now();
-        println!("{:?}\n{:?}",res,x)
+        println!("{:?}\n{:?}", res, x)
     }
 }
