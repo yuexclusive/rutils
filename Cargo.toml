@@ -1,11 +1,16 @@
 [workspace]
 
 members = [
-    "./json",
-    "./time",
-    "./algorithm",
-    "./rocket_demo",
-    "./clap_demo",
-    "./design_pattern",
-    "./sql_demo",
+  "./time",
+  "./rocket_demo",
+  "./clap_demo",
+  "./design_pattern",
+  "./sql_demo",
+  "./redis_demo",
+  "./hello_macro",
+  "./hello_macro_derive",
+  "./leetcode",
+  "./logger",
+  "./serde_demo",
+  "./config"
 ]
