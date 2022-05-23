@@ -6,12 +6,8 @@ version = "0.1.0"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-chrono = "*"
-log = "*"
-tempfile = "*"
-time = {version = "*", features = ["macros"]}
-tokio = {version = "*", features = ["full"]}
-tracing = {version = "*"}
-tracing-appender = "*"
-tracing-core = "*"
-tracing-subscriber = {version = "*", features = ["json", "env-filter"]}
+chrono = "0"
+tracing = "0"
+tracing-appender = "0"
+tracing-core = "0"
+tracing-subscriber = {version = "0", features = ["json", "env-filter"]}
