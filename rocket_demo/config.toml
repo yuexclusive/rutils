@@ -1,0 +1,8 @@
+name = "rocket_demo"
+
+[mysql]
+address = "mysql://test:123@127.0.0.1:3306/evolve"
+
+[redis]
+address = "127.0.0.1"
+password = ""

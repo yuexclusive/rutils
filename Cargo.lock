@@ -58,6 +58,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "anyhow"
+version = "1.0.57"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "08f9b8508dccb7687a1d6c4ce66b2b0ecef467c94667de27d8d7fe1f8d2a9cdc"
+
+[[package]]
 name = "async-stream"
 version = "0.3.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -509,18 +515,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "flume"
-version = "0.10.12"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "843c03199d0c0ca54bc1ea90ac0d507274c28abcc4f691ae8b4eaa375087c76a"
-dependencies = [
- "futures-core",
- "futures-sink",
- "pin-project",
- "spin 0.9.3",
-]
-
-[[package]]
 name = "fnv"
 version = "1.0.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -580,17 +574,6 @@ name = "futures-core"
 version = "0.3.21"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "0c09fd04b7e4073ac7156a9539b57a484a8ea920f79c7c675d05d289ab6110d3"
-
-[[package]]
-name = "futures-executor"
-version = "0.3.21"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9420b90cfa29e327d0429f19be13e7ddb68fa1cccb09d65e5706b8c7a749b8a6"
-dependencies = [
- "futures-core",
- "futures-task",
- "futures-util",
-]
 
 [[package]]
 name = "futures-intrusive"
@@ -921,17 +904,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "33a33a362ce288760ec6a508b94caaec573ae7d3bbbd91b87aa0bad4456839db"
 
 [[package]]
-name = "libsqlite3-sys"
-version = "0.24.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "898745e570c7d0453cc1fbc4a701eb6c662ed54e8fec8b7d14be137ebeeb9d14"
-dependencies = [
- "cc",
- "pkg-config",
- "vcpkg",
-]
-
-[[package]]
 name = "linked-hash-map"
 version = "0.5.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -959,6 +931,18 @@ dependencies = [
 [[package]]
 name = "logger"
 version = "0.1.0"
+dependencies = [
+ "chrono",
+ "tracing",
+ "tracing-appender",
+ "tracing-core",
+ "tracing-subscriber",
+]
+
+[[package]]
+name = "logger"
+version = "0.1.0"
+source = "git+https://github.com/yuexclusive/rutils?branch=dev#c84827cdc04d51b071c506ad4ec304179c64d0cf"
 dependencies = [
  "chrono",
  "tracing",
@@ -1309,26 +1293,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d4fd5641d01c8f18a23da7b6fe29298ff4b55afcccdf78973b24cf3175fee32e"
 
 [[package]]
-name = "pin-project"
-version = "1.0.10"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "58ad3879ad3baf4e44784bc6a718a8698867bb991f8ce24d1bcbe2cfb4c3a75e"
-dependencies = [
- "pin-project-internal",
-]
-
-[[package]]
-name = "pin-project-internal"
-version = "1.0.10"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "744b6f092ba29c3650faf274db506afd39944f48420f6c86b17cfe0ee1cb36bb"
-dependencies = [
- "proc-macro2",
- "quote",
- "syn",
-]
-
-[[package]]
 name = "pin-project-lite"
 version = "0.2.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1620,8 +1584,15 @@ dependencies = [
 name = "rocket_demo"
 version = "0.1.0"
 dependencies = [
+ "anyhow",
+ "lazy_static",
+ "logger 0.1.0 (git+https://github.com/yuexclusive/rutils?branch=dev)",
  "rocket",
- "time 0.1.0 (git+https://github.com/yuexclusive/rutils)",
+ "serde",
+ "sqlx",
+ "tokio",
+ "toml",
+ "uuid",
 ]
 
 [[package]]
@@ -1869,9 +1840,6 @@ name = "spin"
 version = "0.9.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "c530c2b0d0bf8b69304b39fe2001993e267461948b890cd037d8ad4293fa1a0d"
-dependencies = [
- "lock_api",
-]
 
 [[package]]
 name = "spki"
@@ -1928,10 +1896,8 @@ dependencies = [
  "digest",
  "either",
  "event-listener",
- "flume",
  "futures-channel",
  "futures-core",
- "futures-executor",
  "futures-intrusive",
  "futures-util",
  "generic-array",
@@ -1940,7 +1906,6 @@ dependencies = [
  "indexmap",
  "itoa 1.0.2",
  "libc",
- "libsqlite3-sys",
  "log",
  "memchr",
  "num-bigint",
@@ -2109,14 +2074,6 @@ dependencies = [
 
 [[package]]
 name = "time"
-version = "0.1.0"
-source = "git+https://github.com/yuexclusive/rutils#31e3d17982be5000b09c58e395c0810da9c288eb"
-dependencies = [
- "chrono",
-]
-
-[[package]]
-name = "time"
 version = "0.1.43"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "ca8a50ef2360fbd1eeb0ecd46795a87a19024eb4b53c5dc916ca1fd95fe62438"
@@ -2170,7 +2127,6 @@ dependencies = [
  "mio",
  "num_cpus",
  "once_cell",
- "parking_lot 0.12.0",
  "pin-project-lite",
  "signal-hook-registry",
  "socket2",
@@ -2429,6 +2385,28 @@ dependencies = [
  "idna",
  "matches",
  "percent-encoding",
+]
+
+[[package]]
+name = "uuid"
+version = "1.0.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "8cfcd319456c4d6ea10087ed423473267e1a071f3bc0aa89f80d60997843c6f0"
+dependencies = [
+ "getrandom",
+ "rand",
+ "uuid-macro-internal",
+]
+
+[[package]]
+name = "uuid-macro-internal"
+version = "1.0.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "19357b4e5daf765771cc2b873c751f7f3d674e8e9380441995e6e49cf1b3261b"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn",
 ]
 
 [[package]]

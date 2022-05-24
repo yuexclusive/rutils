@@ -2,6 +2,8 @@
 #![allow(unused)]
 #[macro_use]
 extern crate rocket;
+pub mod config;
+pub mod dao;
 
 use rocket::form::Form;
 use rocket::http::Header;

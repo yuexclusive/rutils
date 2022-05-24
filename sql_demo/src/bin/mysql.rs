@@ -42,7 +42,7 @@ async fn last() -> Result<Cake, sqlx::Error> {
     .await
 }
 
-async fn create() -> Result<u64, sqlx::Error> {
+async fn insert() -> Result<u64, sqlx::Error> {
     let res = sqlx::query!("insert into fruit(name) values (?)", "test")
         .execute(&pool().await?)
         .await?;
@@ -90,8 +90,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_create() -> Result<(), sqlx::Error> {
-        let res = create().await?;
+    async fn test_insert() -> Result<(), sqlx::Error> {
+        let res = insert().await?;
         println!("last_insert_id: {}", res);
         Ok(())
     }
