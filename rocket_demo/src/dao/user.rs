@@ -1,12 +1,13 @@
 use super::common::pool;
 use super::common::transaction;
+use super::common::SqlResult;
 use sqlx::{Error, Executor, MySql};
 
 #[derive(Debug)]
 pub struct User {
-    id: i64,
-    email: String,
-    role_name: String,
+    pub id: i64,
+    pub email: String,
+    pub role_name: String,
 }
 
 pub struct Dao {
@@ -20,7 +21,7 @@ impl Dao {
         }
     }
 
-    pub async fn query<'a, E>(&self, e: E) -> Result<Vec<User>, Error>
+    pub async fn query<'a, E>(&self, e: E) -> SqlResult<Vec<User>>
     where
         E: Executor<'a, Database = MySql>,
     {
@@ -38,7 +39,7 @@ impl Dao {
         .await
     }
 
-    pub async fn first<'a, E>(&self, e: E, id: i64) -> Result<User, Error>
+    pub async fn first<'a, E>(&self, e: E, id: i64) -> SqlResult<User>
     where
         E: Executor<'a, Database = MySql>,
     {
@@ -55,7 +56,7 @@ impl Dao {
         .await
     }
 
-    pub async fn last<'a, E>(&self, e: E) -> Result<User, Error>
+    pub async fn last<'a, E>(&self, e: E) -> SqlResult<User>
     where
         E: Executor<'a, Database = MySql>,
     {
@@ -71,7 +72,7 @@ impl Dao {
         .await
     }
 
-    pub async fn insert<'a, E>(&self, e: E) -> Result<u64, Error>
+    pub async fn insert<'a, E>(&self, e: E) -> SqlResult<u64>
     where
         E: Executor<'a, Database = MySql>,
     {
@@ -94,7 +95,7 @@ impl Dao {
         Ok(res.last_insert_id())
     }
 
-    pub async fn update<'a, E>(&self, e: E, id: i64, name: &str) -> Result<u64, Error>
+    pub async fn update<'a, E>(&self, e: E, id: i64, name: &str) -> SqlResult<u64>
     where
         E: Executor<'a, Database = MySql>,
     {
@@ -105,7 +106,7 @@ impl Dao {
         Ok(res.rows_affected())
     }
 
-    pub async fn delete<'a, E>(&self, e: E, id: i64) -> Result<u64, Error>
+    pub async fn delete<'a, E>(&self, e: E, id: i64) -> SqlResult<u64>
     where
         E: Executor<'a, Database = MySql>,
     {
@@ -123,7 +124,7 @@ mod tests {
     use std::time::{self, Duration, SystemTime};
 
     #[tokio::test]
-    async fn test_first() -> Result<(), Error> {
+    async fn test_first() -> SqlResult<()> {
         let res = Dao::new().first(&pool().await?, 3).await?;
 
         println!("{:?}", res);
@@ -132,7 +133,7 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_last() -> Result<(), Error> {
+    async fn test_last() -> SqlResult<()> {
         let res = Dao::new().last(&pool().await?).await?;
 
         println!("{:?}", res);
@@ -141,14 +142,14 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_insert() -> Result<(), Error> {
+    async fn test_insert() -> SqlResult<()> {
         let res = Dao::new().insert(&pool().await?).await?;
         println!("last_insert_id: {}", res);
         Ok(())
     }
 
     #[tokio::test]
-    async fn test_update() -> Result<(), Error> {
+    async fn test_update() -> SqlResult<()> {
         let mut tx = transaction().await?;
         let id = Dao::new().last(&mut tx).await?.id;
         let res = Dao::new().update(&mut tx, id, "Blueberry").await?;
@@ -158,7 +159,7 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_delete() -> Result<(), Error> {
+    async fn test_delete() -> SqlResult<()> {
         let mut tx = transaction().await?;
         let id = Dao::new().last(&mut tx).await?.id;
         let res = Dao::new().delete(&mut tx, id).await?;
@@ -168,7 +169,7 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_query_join() -> Result<(), Error> {
+    async fn test_query_join() -> SqlResult<()> {
         let now = SystemTime::now();
         let e = &pool().await?;
         let dao = Dao::new();
@@ -184,7 +185,7 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_query() -> Result<(), Error> {
+    async fn test_query() -> SqlResult<()> {
         let now = SystemTime::now();
         let (f, q) = (
             Dao::new().first(&pool().await?, 3).await?,

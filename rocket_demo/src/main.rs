@@ -3,13 +3,18 @@
 #[macro_use]
 extern crate rocket;
 pub mod config;
+pub mod controller;
 pub mod dao;
+pub mod service;
 
 use rocket::form::Form;
 use rocket::http::Header;
+use rocket::http::Status;
+use rocket::response::{content, status};
 use rocket::serde::json::Json;
 use rocket::serde::{Deserialize, Serialize};
 use rocket::Config;
+use rocket::Request;
 use std::net::Ipv4Addr;
 use std::path::PathBuf;
 
@@ -58,23 +63,42 @@ fn json_res() -> Json<Person<'static>> {
     })
 }
 
-#[launch]
-fn rocket() -> _ {
-    rocket::build().mount(
-        "/",
-        routes![
-            hello_path,
-            hello_query_string,
-            paths,
-            form,
-            json_req,
-            json_res
-        ],
+#[catch(default)]
+fn default_catcher(status: Status, req: &Request<'_>) -> status::Custom<String> {
+    let msg = format!("{} ({})", status, req.uri());
+    status::Custom(status, msg)
+}
+
+#[catch(404)]
+fn general_not_found() -> content::RawHtml<&'static str> {
+    content::RawHtml(
+        r#"
+        <p>Hmm... What are you looking for?</p>
+        Say <a href="/hello/Sergio/100">hello!</a>
+    "#,
     )
 }
 
+#[launch]
+fn rocket() -> _ {
+    rocket::build()
+        .mount(
+            "/",
+            routes![
+                hello_path,
+                hello_query_string,
+                paths,
+                form,
+                json_req,
+                json_res,
+                controller::user::query,
+            ],
+        )
+        .register("/", catchers![general_not_found, default_catcher])
+}
+
 #[cfg(test)]
-mod test {
+mod tests {
     use super::*;
     use rocket::http::Status;
     use rocket::local::blocking::Client;

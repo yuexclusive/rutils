@@ -4,7 +4,7 @@ port = 8080
 workers = 20
 keep_alive = 5
 ident = "Rocket"
-log_level = "normal"
+log_level = "debug"
 temp_dir = "/tmp"
 cli_colors = true
 ## NOTE: Don't (!) use this key! Generate your own!
