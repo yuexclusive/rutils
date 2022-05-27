@@ -1,7 +1,9 @@
-use super::common::pool;
-use super::common::transaction;
+use std::marker::PhantomData;
+
 use super::common::SqlResult;
-use sqlx::{Error, Executor, MySql};
+use super::common::{pool, transaction};
+use rocket::futures::FutureExt;
+use sqlx::{Executor, MySql};
 
 #[derive(Debug)]
 pub struct User {
@@ -10,21 +12,31 @@ pub struct User {
     pub role_name: String,
 }
 
-pub struct Dao {
-    table_name: String,
+pub struct Dao<'a, E>
+where
+    E: Executor<'a, Database = MySql>,
+{
+    executor: E,
+    _maker: PhantomData<&'a E>,
 }
 
-impl Dao {
-    pub fn new() -> Self {
+impl<'a, E> Dao<'a, E>
+where
+    E: Executor<'a, Database = MySql>,
+{
+    pub fn new(e: E) -> Self {
         Self {
-            table_name: String::from("user"),
+            executor: e,
+            _maker: PhantomData,
         }
     }
+}
 
-    pub async fn query<'a, E>(&self, e: E) -> SqlResult<Vec<User>>
-    where
-        E: Executor<'a, Database = MySql>,
-    {
+impl<'a, E> Dao<'a, E>
+where
+    E: Executor<'a, Database = MySql>,
+{
+    pub async fn query(self) -> SqlResult<Vec<User>> {
         sqlx::query_as!(
             User,
             "select u.id,u.email,r.name as role_name 
@@ -35,14 +47,11 @@ impl Dao {
             10,
             0
         )
-        .fetch_all(e)
+        .map(|x| x)
+        .fetch_all(self.executor)
         .await
     }
-
-    pub async fn first<'a, E>(&self, e: E, id: i64) -> SqlResult<User>
-    where
-        E: Executor<'a, Database = MySql>,
-    {
+    pub async fn first(self, id: i64) -> SqlResult<User> {
         sqlx::query_as!(
             User,
             "select u.id,u.email,r.name as role_name 
@@ -52,15 +61,11 @@ impl Dao {
         where u.id = ?",
             id
         )
-        .fetch_one(&pool().await?)
+        .fetch_one(self.executor)
         .await
     }
 
-    pub async fn last<'a, E>(&self, e: E) -> SqlResult<User>
-    where
-        E: Executor<'a, Database = MySql>,
-    {
-        let p = &pool().await?;
+    pub async fn last(self) -> SqlResult<User> {
         sqlx::query_as!(
             User,
             "select u.id,u.email,r.name as role_name 
@@ -68,50 +73,42 @@ impl Dao {
         join user_role_map urm on u.id =urm.user_id 
         join `role` r on urm.role_id  = r.id order by u.id desc limit 1"
         )
-        .fetch_one(&pool().await?)
+        .fetch_one(self.executor)
         .await
     }
 
-    pub async fn insert<'a, E>(&self, e: E) -> SqlResult<u64>
-    where
-        E: Executor<'a, Database = MySql>,
-    {
-        let mut tr = transaction().await?;
+    pub async fn insert(self) -> SqlResult<u64> {
         let id = uuid::Uuid::new_v4().to_string();
         let res = sqlx::query!("insert into user(email,salt) values (?,?)", "test", id)
-            .execute(&mut tr)
+            .execute(self.executor)
             .await?;
-
-        sqlx::query!(
-            "insert into user_role_map(user_id,role_id) values (?,?)",
-            res.last_insert_id(),
-            1
-        )
-        .execute(&mut tr)
-        .await?;
-
-        tr.commit().await?;
 
         Ok(res.last_insert_id())
     }
 
-    pub async fn update<'a, E>(&self, e: E, id: i64, name: &str) -> SqlResult<u64>
-    where
-        E: Executor<'a, Database = MySql>,
-    {
+    pub async fn insert_user_role_map(self, user_id: i64) -> SqlResult<u64> {
+        let res = sqlx::query!(
+            "insert into user_role_map(user_id,role_id) values (?,?)",
+            user_id,
+            1
+        )
+        .execute(self.executor)
+        .await?;
+
+        Ok(res.last_insert_id())
+    }
+
+    pub async fn update(self, id: i64, name: &str) -> SqlResult<u64> {
         let res = sqlx::query!("update user set name=? where id in (?)", name, id)
-            .execute(&pool().await?)
+            .execute(self.executor)
             .await?;
 
         Ok(res.rows_affected())
     }
 
-    pub async fn delete<'a, E>(&self, e: E, id: i64) -> SqlResult<u64>
-    where
-        E: Executor<'a, Database = MySql>,
-    {
+    pub async fn delete(self, id: i64) -> SqlResult<u64> {
         let res = sqlx::query!("delete from user where id in (?)", id)
-            .execute(&pool().await?)
+            .execute(self.executor)
             .await?;
 
         Ok(res.rows_affected())
@@ -125,7 +122,7 @@ mod tests {
 
     #[tokio::test]
     async fn test_first() -> SqlResult<()> {
-        let res = Dao::new().first(&pool().await?, 3).await?;
+        let res = Dao::new(&pool().await?).first(3).await?;
 
         println!("{:?}", res);
 
@@ -134,7 +131,7 @@ mod tests {
 
     #[tokio::test]
     async fn test_last() -> SqlResult<()> {
-        let res = Dao::new().last(&pool().await?).await?;
+        let res = Dao::new(&pool().await?).last().await?;
 
         println!("{:?}", res);
 
@@ -143,7 +140,9 @@ mod tests {
 
     #[tokio::test]
     async fn test_insert() -> SqlResult<()> {
-        let res = Dao::new().insert(&pool().await?).await?;
+        let mut tx = transaction().await?;
+        let res = Dao::new(&mut tx).insert().await?;
+        Dao::new(&mut tx).insert_user_role_map(res as i64).await?;
         println!("last_insert_id: {}", res);
         Ok(())
     }
@@ -151,8 +150,8 @@ mod tests {
     #[tokio::test]
     async fn test_update() -> SqlResult<()> {
         let mut tx = transaction().await?;
-        let id = Dao::new().last(&mut tx).await?.id;
-        let res = Dao::new().update(&mut tx, id, "Blueberry").await?;
+        let id = Dao::new(&mut tx).last().await?.id;
+        let res = Dao::new(&mut tx).update(id, "Blueberry").await?;
         tx.commit().await?;
         println!("rows_affected: {}", res);
         Ok(())
@@ -161,8 +160,8 @@ mod tests {
     #[tokio::test]
     async fn test_delete() -> SqlResult<()> {
         let mut tx = transaction().await?;
-        let id = Dao::new().last(&mut tx).await?.id;
-        let res = Dao::new().delete(&mut tx, id).await?;
+        let id = Dao::new(&mut tx).last().await?.id;
+        let res = Dao::new(&mut tx).delete(id).await?;
         tx.commit().await?;
         println!("rows_affected: {}", res);
         Ok(())
@@ -172,9 +171,8 @@ mod tests {
     async fn test_query_join() -> SqlResult<()> {
         let now = SystemTime::now();
         let e = &pool().await?;
-        let dao = Dao::new();
-        let f1 = dao.first(e, 3);
-        let f2 = dao.query(e);
+        let f1 = Dao::new(e).first(3);
+        let f2 = Dao::new(e).query();
         let (f, q) = tokio::join!(f1, f2);
 
         println!("first: {:?}", f);
@@ -187,10 +185,8 @@ mod tests {
     #[tokio::test]
     async fn test_query() -> SqlResult<()> {
         let now = SystemTime::now();
-        let (f, q) = (
-            Dao::new().first(&pool().await?, 3).await?,
-            Dao::new().query(&pool().await?).await,
-        );
+        let e = &pool().await?;
+        let (f, q) = (Dao::new(e).first(3).await?, Dao::new(e).query().await);
 
         println!("first: {:?}", f);
         println!("query: {:?}", q);

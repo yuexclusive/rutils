@@ -1,7 +1,6 @@
 use crate::config;
+use sqlx::{mysql::MySqlPool, Database, MySql, Pool, Transaction};
 use std::result::Result;
-
-use sqlx::{mysql::MySqlPool, Database, Error, Executor, MySql, Pool, Transaction};
 
 pub type SqlResult<T, E = sqlx::Error> = Result<T, E>;
 

@@ -12,7 +12,7 @@ impl Service {
 
 impl Service {
     pub async fn query(&self) -> SqlResult<Vec<user_dao::User>> {
-        let res = user_dao::Dao::new().query(&pool().await?).await?;
+        let res = user_dao::Dao::new(&pool().await?).query().await?;
         Ok(res)
     }
 }

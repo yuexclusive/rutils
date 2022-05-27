@@ -7,7 +7,9 @@ version = "0.1.0"
 
 [dependencies]
 anyhow = "*"
+env_logger = "*"
 lazy_static = "*"
+log = "*"
 logger = {git = "https://github.com/yuexclusive/rutils", package = "logger", branch = "dev"}
 rocket = {version = "0.5.0-rc.2", features = ["secrets", "json"]}
 serde = {version = "*", features = ["derive"]}

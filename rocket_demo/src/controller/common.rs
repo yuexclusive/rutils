@@ -1,78 +1,65 @@
+use rocket::http::Status;
+use rocket::response::status;
 use rocket::serde::{json::Json, Serialize};
 use std::error::Error;
 
-#[derive(Serialize, Debug)]
-#[serde(untagged)]
+#[derive(Serialize)]
+// #[serde(untagged)]
+// #[serde(rename(serialize = "ok"))]
 pub enum Code {
-    OK(u16),
-    ServerError(u16),
+    #[serde(rename(serialize = "20000"))]
+    Ok = 20000,
+    #[serde(rename(serialize = "50000"))]
+    Err = 50000,
 }
 
-#[derive(Serialize, Debug)]
-#[serde(tag = "status")]
-pub enum Response<T>
-where
-    T: Serialize,
-{
-    #[serde(rename(serialize = "ok"))]
-    OK(OkResult<T>),
-    #[serde(rename(serialize = "error"))]
-    Error(ErrResult),
-}
-
-#[derive(Serialize, Debug)]
-pub struct OkResult<T>
+#[derive(Serialize)]
+pub struct Result<T>
 where
     T: Serialize,
 {
     #[serde(skip_serializing_if = "Option::is_none")]
     data: Option<T>,
-    code: Code,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    msg: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    code: Option<Code>,
 }
 
-impl<T> OkResult<T> where T: Serialize {}
+pub type JsonResult<T> = status::Custom<Json<Result<T>>>;
 
-#[derive(Serialize, Debug)]
-pub struct ErrResult {
-    msg: String,
-    code: Code,
-}
-
-impl ErrResult {
-    pub fn new(msg: String, code: Code) -> Self {
-        Self { msg, code }
-    }
-}
-
-pub fn ok_with<T>(data: T) -> Json<Response<T>>
+pub fn result<T>(
+    status: Status,
+    code: Option<Code>,
+    msg: Option<String>,
+    data: Option<T>,
+) -> JsonResult<T>
 where
     T: Serialize,
 {
-    let res = {
-        let code = Code::OK(200);
-        OkResult {
-            data: Some(data),
-            code: Code::OK(200),
-        }
+    let res = Result {
+        data: data,
+        msg: msg,
+        code: code,
     };
-    Json(Response::OK(res))
+    status::Custom(status, Json(res))
 }
 
-pub fn ok<T>() -> Json<Response<T>>
+pub fn ok<T>(data: T) -> JsonResult<T>
 where
     T: Serialize,
 {
-    let res = OkResult {
-        data: None,
-        code: Code::OK(200),
-    };
-    Json(Response::OK(res))
+    result(Status::Ok, Some(Code::Ok), None, Some(data))
 }
 
-pub fn error<T>(err: impl Error, code: Code) -> Json<Response<T>>
+pub fn error<T>(err: impl Error) -> JsonResult<T>
 where
     T: Serialize,
 {
-    let res = ErrResult::new(err.to_string(), code);
-    Json(Response::Error(res))
+    result(
+        Status::InternalServerError,
+        Some(Code::Err),
+        Some(err.to_string()),
+        None,
+    )
 }

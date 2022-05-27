@@ -10,7 +10,7 @@ pub struct User {
 }
 
 #[get("/user/query")]
-pub async fn query() -> Json<Response<Vec<User>>> {
+pub async fn query() -> JsonResult<Vec<User>> {
     match user_service::Service::new().query().await {
         Ok(data) => {
             let mut res = vec![];
@@ -22,8 +22,8 @@ pub async fn query() -> Json<Response<Vec<User>>> {
                     role_name: x.role_name.clone(),
                 })
             });
-            ok_with(res)
+            ok(res)
         }
-        Err(err) => error(err, Code::ServerError(500)),
+        Err(err) => error(err),
     }
 }

@@ -1,5 +1,6 @@
 #![allow(dead_code)]
 #![allow(unused)]
+
 #[macro_use]
 extern crate rocket;
 pub mod config;
@@ -13,10 +14,14 @@ use rocket::http::Status;
 use rocket::response::{content, status};
 use rocket::serde::json::Json;
 use rocket::serde::{Deserialize, Serialize};
-use rocket::Config;
 use rocket::Request;
-use std::net::Ipv4Addr;
 use std::path::PathBuf;
+
+#[get("/ping")]
+async fn ping() -> status::Custom<&'static str> {
+    // (Status::Ok, "pong")
+    status::Custom(Status::Ok, "pong")
+}
 
 #[get("/hello_path/<name>")]
 fn hello_path(name: &str) -> String {
@@ -92,6 +97,7 @@ fn rocket() -> _ {
                 json_req,
                 json_res,
                 controller::user::query,
+                ping,
             ],
         )
         .register("/", catchers![general_not_found, default_catcher])
@@ -150,7 +156,7 @@ mod tests {
     fn json_res() {
         /* .. */
         let client = Client::tracked(rocket()).expect("valid rocket instance");
-        let mut req = client.get("/json_res");
+        let req = client.get("/json_res");
 
         let response = req.dispatch();
         assert_eq!(response.status(), Status::Ok);
