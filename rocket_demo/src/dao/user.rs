@@ -1,7 +1,7 @@
 use std::marker::PhantomData;
 
-use super::common::SqlResult;
-use super::common::{pool, transaction};
+use super::common::db::SqlResult;
+use super::common::db::{conn, tran};
 use crate::model::common::Pagination;
 use rocket::futures::FutureExt;
 use sqlx::{Executor, MySql};
@@ -125,92 +125,5 @@ where
             .await?;
 
         Ok(res.rows_affected())
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-    use std::time::{self, Duration, SystemTime};
-
-    #[tokio::test]
-    async fn test_first() -> SqlResult<()> {
-        let res = Dao::new(&pool().await?).first(3).await?;
-
-        println!("{:?}", res);
-
-        Ok(())
-    }
-
-    #[tokio::test]
-    async fn test_last() -> SqlResult<()> {
-        let res = Dao::new(&pool().await?).last().await?;
-
-        println!("{:?}", res);
-
-        Ok(())
-    }
-
-    #[tokio::test]
-    async fn test_insert() -> SqlResult<()> {
-        let mut tx = transaction().await?;
-        let res = Dao::new(&mut tx).insert("test").await?;
-        Dao::new(&mut tx)
-            .insert_user_role_map(res as i64, 1)
-            .await?;
-        println!("last_insert_id: {}", res);
-        tx.commit();
-        Ok(())
-    }
-
-    #[tokio::test]
-    async fn test_update() -> SqlResult<()> {
-        let mut tx = transaction().await?;
-        let id = Dao::new(&mut tx).last().await?.id;
-        let res = Dao::new(&mut tx).update(id, "Blueberry").await?;
-        tx.commit().await?;
-        println!("rows_affected: {}", res);
-        Ok(())
-    }
-
-    #[tokio::test]
-    async fn test_delete() -> SqlResult<()> {
-        let mut tx = transaction().await?;
-        let id = Dao::new(&mut tx).last().await?.id;
-        let res = Dao::new(&mut tx).delete(id).await?;
-        tx.commit().await?;
-        println!("rows_affected: {}", res);
-        Ok(())
-    }
-
-    #[tokio::test]
-    async fn test_query_join() -> SqlResult<()> {
-        let now = SystemTime::now();
-        let e = &pool().await?;
-        let f1 = Dao::new(e).first(3);
-        let f2 = Dao::new(e).query(&Pagination { index: 1, size: 10 });
-        let (f, q) = tokio::join!(f1, f2);
-
-        println!("first: {:?}", f);
-        println!("query: {:?}", q);
-
-        println!("elapesd with join: {}", now.elapsed().unwrap().as_millis());
-        Ok(())
-    }
-
-    #[tokio::test]
-    async fn test_query() -> SqlResult<()> {
-        let now = SystemTime::now();
-        let e = &pool().await?;
-        let (f, q) = (
-            Dao::new(e).first(3).await?,
-            Dao::new(e).query(&Pagination { index: 1, size: 10 }).await,
-        );
-
-        println!("first: {:?}", f);
-        println!("query: {:?}", q);
-
-        println!("elapesd: {}", now.elapsed().unwrap().as_millis());
-        Ok(())
     }
 }

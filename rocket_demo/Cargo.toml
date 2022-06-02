@@ -12,6 +12,8 @@ lazy_static = "*"
 # logger = {git = "https://github.com/yuexclusive/rutils", package = "logger", branch = "dev"}
 log = "*"
 log4rs = {version = "*", features = ["all_components"]}
+openssl = {version = "0", features = ["vendored"]}
+redis = {version = "*", features = ["tokio-comp"]}
 rocket = {version = "0.5.0-rc.2", features = ["secrets", "json"]}
 serde = {version = "*", features = ["derive"]}
 serde_json = "*"
@@ -19,7 +21,6 @@ sqlx = {version = "0.5", features = [
   "runtime-tokio-native-tls",
   "mysql",
 ]}
-tokio = {version = "1", features = ["rt-multi-thread", "macros"]}
+tokio = {version = "1", features = ["rt-multi-thread", "macros", "time"]}
 toml = {version = "*"}
 uuid = {version = "1", features = ["v4", "fast-rng", "macro-diagnostics"]}
-openssl = { version = "0", features = ["vendored"] }

@@ -5,7 +5,6 @@ members = [
   "./rocket_demo",
   "./clap_demo",
   "./design_pattern",
-  "./redis_demo",
   "./hello_macro",
   "./hello_macro_derive",
   "./leetcode",

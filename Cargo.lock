@@ -1541,14 +1541,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "redis_demo"
-version = "0.1.0"
-dependencies = [
- "redis",
- "tokio",
-]
-
-[[package]]
 name = "redox_syscall"
 version = "0.2.13"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1676,6 +1668,7 @@ dependencies = [
  "log",
  "log4rs",
  "openssl",
+ "redis",
  "rocket",
  "serde",
  "serde_json",

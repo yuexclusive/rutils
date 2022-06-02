@@ -73,66 +73,66 @@ pub fn general_not_found() -> content::RawHtml<&'static str> {
     )
 }
 
-#[cfg(test)]
-mod tests {
-    use super::*;
-    use rocket::http::Status;
-    use rocket::local::blocking::Client;
+// #[cfg(test)]
+// mod tests {
+//     use super::*;
+//     use rocket::http::Status;
+//     use rocket::local::blocking::Client;
 
-    #[test]
-    fn hello_path() {
-        /* .. */
-        let client = Client::tracked(crate::rocket()).expect("valid rocket instance");
-        let response = client.get("/hello_path/world").dispatch();
-        assert_eq!(response.status(), Status::Ok);
-        assert_eq!(response.into_string().unwrap(), "hello world");
-    }
+//     #[test]
+//     fn hello_path() {
+//         /* .. */
+//         let client = Client::tracked(crate::rocket()).expect("valid rocket instance");
+//         let response = client.get("/hello_path/world").dispatch();
+//         assert_eq!(response.status(), Status::Ok);
+//         assert_eq!(response.into_string().unwrap(), "hello world");
+//     }
 
-    #[test]
-    fn hello_query_string() {
-        /* .. */
-        let client = Client::tracked(crate::rocket()).expect("valid rocket instance");
-        let response = client.get("/hello_query_string?name=world").dispatch();
-        assert_eq!(response.status(), Status::Ok);
-        assert_eq!(response.into_string().unwrap(), "hello world");
-    }
+//     #[test]
+//     fn hello_query_string() {
+//         /* .. */
+//         let client = Client::tracked(crate::rocket()).expect("valid rocket instance");
+//         let response = client.get("/hello_query_string?name=world").dispatch();
+//         assert_eq!(response.status(), Status::Ok);
+//         assert_eq!(response.into_string().unwrap(), "hello world");
+//     }
 
-    #[test]
-    fn paths() {
-        /* .. */
-        let client = Client::tracked(crate::rocket()).expect("valid rocket instance");
-        let response = client.get("/paths/n1/n2").dispatch();
-        assert_eq!(response.status(), Status::Ok);
-        assert_eq!(response.into_string().unwrap(), "n1,n2");
-    }
+//     #[test]
+//     fn paths() {
+//         /* .. */
+//         let client = Client::tracked(crate::rocket()).expect("valid rocket instance");
+//         let response = client.get("/paths/n1/n2").dispatch();
+//         assert_eq!(response.status(), Status::Ok);
+//         assert_eq!(response.into_string().unwrap(), "n1,n2");
+//     }
 
-    #[test]
-    fn json_req() {
-        /* .. */
-        let client = Client::tracked(crate::rocket()).expect("valid rocket instance");
-        let mut req = client.post("/json_req");
-        req.add_header(Header::new("Content-Type", "application/json"));
+//     #[test]
+//     fn json_req() {
+//         /* .. */
+//         let client = Client::tracked(crate::rocket()).expect("valid rocket instance");
+//         let mut req = client.post("/json_req");
+//         req.add_header(Header::new("Content-Type", "application/json"));
 
-        req.set_body(r#"{"type":"message","complete":false}"#);
-        let response = req.dispatch();
-        assert_eq!(response.status(), Status::Ok);
-        assert_eq!(
-            response.into_string().unwrap(),
-            "type: message, complete: false"
-        );
-    }
+//         req.set_body(r#"{"type":"message","complete":false}"#);
+//         let response = req.dispatch();
+//         assert_eq!(response.status(), Status::Ok);
+//         assert_eq!(
+//             response.into_string().unwrap(),
+//             "type: message, complete: false"
+//         );
+//     }
 
-    #[test]
-    fn json_res() {
-        /* .. */
-        let client = Client::tracked(crate::rocket()).expect("valid rocket instance");
-        let req = client.get("/json_res");
+//     #[test]
+//     fn json_res() {
+//         /* .. */
+//         let client = Client::tracked(crate::rocket()).expect("valid rocket instance");
+//         let req = client.get("/json_res");
 
-        let response = req.dispatch();
-        assert_eq!(response.status(), Status::Ok);
-        assert_eq!(
-            response.into_string().unwrap(),
-            r#"{"name":"test","age":18}"#
-        );
-    }
-}
+//         let response = req.dispatch();
+//         assert_eq!(response.status(), Status::Ok);
+//         assert_eq!(
+//             response.into_string().unwrap(),
+//             r#"{"name":"test","age":18}"#
+//         );
+//     }
+// }

@@ -4,5 +4,5 @@ name = "rocket_demo"
 address = "mysql://test:123@192.168.0.243:3306/evolve"
 
 [redis]
-address = "192.168.0.243"
+address = "redis://192.168.0.243:6379/"
 password = ""
