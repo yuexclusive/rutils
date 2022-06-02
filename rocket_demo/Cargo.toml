@@ -6,24 +6,20 @@ version = "0.1.0"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-anyhow = "*"
 env_logger = "*"
 lazy_static = "*"
+# log = "*"
+# logger = {git = "https://github.com/yuexclusive/rutils", package = "logger", branch = "dev"}
 log = "*"
-logger = {git = "https://github.com/yuexclusive/rutils", package = "logger", branch = "dev"}
+log4rs = {version = "*", features = ["all_components"]}
 rocket = {version = "0.5.0-rc.2", features = ["secrets", "json"]}
 serde = {version = "*", features = ["derive"]}
+serde_json = "*"
 sqlx = {version = "0.5", features = [
   "runtime-tokio-native-tls",
   "mysql",
 ]}
 tokio = {version = "1", features = ["rt-multi-thread", "macros"]}
 toml = {version = "*"}
-
-[dependencies.uuid]
-features = [
-  "v4", # Lets you generate random UUIDs
-  "fast-rng", # Use a faster (but still sufficiently random) RNG
-  "macro-diagnostics", # Enable better diagnostics for compile-time UUIDs
-]
-version = "1.0.0"
+uuid = {version = "1", features = ["v4", "fast-rng", "macro-diagnostics"]}
+openssl = { version = "0", features = ["vendored"] }

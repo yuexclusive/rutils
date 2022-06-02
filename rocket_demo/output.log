@@ -1,0 +1,298 @@
+[2022-05-31][16:54:50][rocket::launch][INFO] 🔧 Configured for debug.
+[2022-05-31][16:54:50][rocket::launch_][INFO] address: [1;49;39m0.0.0.0[0m
+[2022-05-31][16:54:50][rocket::launch_][INFO] port: [1;49;39m8080[0m
+[2022-05-31][16:54:50][rocket::launch_][INFO] workers: [1;49;39m20[0m
+[2022-05-31][16:54:50][rocket::launch_][INFO] ident: [1;49;39mRocket[0m
+[2022-05-31][16:54:50][rocket::launch_][INFO] limits: [1;49;39mbytes = 8KiB, data-form = 2MiB, file = 1MiB, file/jpg = 5MiB, form = 64kB, json = 1MiB, msgpack = 2MiB, string = 8KiB[0m
+[2022-05-31][16:54:50][rocket::launch_][INFO] temp dir: [1;49;39m/tmp[0m
+[2022-05-31][16:54:50][rocket::launch_][INFO] http/2: [1;49;39mtrue[0m
+[2022-05-31][16:54:50][rocket::launch_][INFO] keep-alive: [1;49;39m5[0m[1;49;39ms[0m
+[2022-05-31][16:54:50][rocket::launch_][INFO] tls: [1;49;39mdisabled[0m
+[2022-05-31][16:54:50][rocket::launch_][INFO] secret key: [1;49;39m[provided][0m
+[2022-05-31][16:54:50][rocket::launch_][INFO] shutdown: [1;49;39mctrlc = true, force = true, signals = [SIGHUP, SIGTERM], grace = 5s, mercy = 5s[0m
+[2022-05-31][16:54:50][rocket::launch_][INFO] log level: [1;49;39mdebug[0m
+[2022-05-31][16:54:50][rocket::launch_][INFO] cli colors: [1;49;39mtrue[0m
+[2022-05-31][16:54:50][rocket::launch][INFO] 📬 [35mRoutes[0m:
+[2022-05-31][16:54:50][rocket::launch_][INFO] [36m([0m[37mping[0m[36m)[0m [32mGET[0m [34m/ping[0m
+[2022-05-31][16:54:50][rocket::launch_][INFO] [36m([0m[37mtest[0m[36m)[0m [32mGET[0m [34m/test[0m
+[2022-05-31][16:54:50][rocket::launch_][INFO] [36m([0m[37mquery[0m[36m)[0m [32mGET[0m [34m/user/query?<page..>[0m
+[2022-05-31][16:54:50][rocket::launch_][INFO] [36m([0m[37mupdate[0m[36m)[0m [32mPUT[0m [34m/user/update[0m
+[2022-05-31][16:54:50][rocket::launch_][INFO] [36m([0m[37minsert[0m[36m)[0m [32mPOST[0m [34m/user/insert[0m
+[2022-05-31][16:54:50][rocket::launch_][INFO] [36m([0m[37mdelete[0m[36m)[0m [32mPOST[0m [34m/user/delete[0m
+[2022-05-31][16:54:50][rocket::launch_][INFO] [36m([0m[37mhello_path[0m[36m)[0m [32mGET[0m [34m/hello_path/<name>[0m
+[2022-05-31][16:54:50][rocket::launch][INFO] 📡 [35mFairings[0m:
+[2022-05-31][16:54:50][rocket::launch_][INFO] [1;49;39mShield[0m ([1;34mliftoff, response, singleton[0m)
+[2022-05-31][16:54:50][rocket::shield::shield][INFO] 🛡️ [35mShield[0m:
+[2022-05-31][16:54:50][_][INFO] X-Frame-Options: [49;39mSAMEORIGIN[0m
+[2022-05-31][16:54:50][_][INFO] Permissions-Policy: [49;39minterest-cohort=()[0m
+[2022-05-31][16:54:50][_][INFO] X-Content-Type-Options: [49;39mnosniff[0m
+[2022-05-31][16:54:50][rocket::launch][INFO] 🚀 [1;49;39mRocket has launched from[0m [1;4;49;39mhttp://0.0.0.0:8080[0m
+[2022-05-31][16:56:38][rocket::server][INFO] [32mGET[0m [34m/user/query?index=1&size=10[0m:
+[2022-05-31][16:56:38][_][INFO] Matched: [36m([0m[37mquery[0m[36m)[0m [32mGET[0m [34m/user/query?<page..>[0m
+[2022-05-31][16:56:38][sqlx::query][INFO] SET sql_mode=(SELECT CONCAT(@@sql_mode, ',PIPES_AS_CONCAT,NO_ENGINE_SUBSTITUTION')),time_zone='+00:00',NAMES …; rows affected: 0, rows returned: 0, elapsed: 1.715ms
+
+SET
+  sql_mode =(
+    SELECT
+      CONCAT(
+        @ @sql_mode,
+        ',PIPES_AS_CONCAT,NO_ENGINE_SUBSTITUTION'
+      )
+  ),
+  time_zone = '+00:00',
+  NAMES utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+[2022-05-31][16:56:38][sqlx::query][INFO] select u.id,u.email,r.name as role_name …; rows affected: 0, rows returned: 1, elapsed: 3.784ms
+
+select
+  u.id,
+  u.email,
+  r.name as role_name
+from
+  `user` u
+  join user_role_map urm on u.id = urm.user_id
+  join `role` r on urm.role_id = r.id
+limit
+  ?, ?
+
+[2022-05-31][16:56:38][sqlx::query][INFO] SET sql_mode=(SELECT CONCAT(@@sql_mode, ',PIPES_AS_CONCAT,NO_ENGINE_SUBSTITUTION')),time_zone='+00:00',NAMES …; rows affected: 0, rows returned: 0, elapsed: 1.779ms
+
+SET
+  sql_mode =(
+    SELECT
+      CONCAT(
+        @ @sql_mode,
+        ',PIPES_AS_CONCAT,NO_ENGINE_SUBSTITUTION'
+      )
+  ),
+  time_zone = '+00:00',
+  NAMES utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+[2022-05-31][16:56:38][sqlx::query][INFO] select count(1) as count …; rows affected: 0, rows returned: 1, elapsed: 4.162ms
+
+select
+  count(1) as count
+from
+  `user` u
+  join user_role_map urm on u.id = urm.user_id
+  join `role` r on urm.role_id = r.id
+
+[2022-05-31][16:56:38][rocket_demo::controller::user][ERROR] user query error for log test
+[2022-05-31][16:56:38][_][INFO] [1;49;39mOutcome:[0m [49;32mSuccess[0m
+[2022-05-31][16:56:38][_][INFO] [32mResponse succeeded.[0m
+[2022-05-31][16:56:38][rocket::server][INFO] [32mGET[0m [34m/user/query?index=1&size=10[0m:
+[2022-05-31][16:56:38][_][INFO] Matched: [36m([0m[37mquery[0m[36m)[0m [32mGET[0m [34m/user/query?<page..>[0m
+[2022-05-31][16:56:38][sqlx::query][INFO] SET sql_mode=(SELECT CONCAT(@@sql_mode, ',PIPES_AS_CONCAT,NO_ENGINE_SUBSTITUTION')),time_zone='+00:00',NAMES …; rows affected: 0, rows returned: 0, elapsed: 1.915ms
+
+SET
+  sql_mode =(
+    SELECT
+      CONCAT(
+        @ @sql_mode,
+        ',PIPES_AS_CONCAT,NO_ENGINE_SUBSTITUTION'
+      )
+  ),
+  time_zone = '+00:00',
+  NAMES utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+[2022-05-31][16:56:38][sqlx::query][INFO] select u.id,u.email,r.name as role_name …; rows affected: 0, rows returned: 1, elapsed: 4.141ms
+
+select
+  u.id,
+  u.email,
+  r.name as role_name
+from
+  `user` u
+  join user_role_map urm on u.id = urm.user_id
+  join `role` r on urm.role_id = r.id
+limit
+  ?, ?
+
+[2022-05-31][16:56:38][sqlx::query][INFO] SET sql_mode=(SELECT CONCAT(@@sql_mode, ',PIPES_AS_CONCAT,NO_ENGINE_SUBSTITUTION')),time_zone='+00:00',NAMES …; rows affected: 0, rows returned: 0, elapsed: 1.423ms
+
+SET
+  sql_mode =(
+    SELECT
+      CONCAT(
+        @ @sql_mode,
+        ',PIPES_AS_CONCAT,NO_ENGINE_SUBSTITUTION'
+      )
+  ),
+  time_zone = '+00:00',
+  NAMES utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+[2022-05-31][16:56:38][sqlx::query][INFO] select count(1) as count …; rows affected: 0, rows returned: 1, elapsed: 3.108ms
+
+select
+  count(1) as count
+from
+  `user` u
+  join user_role_map urm on u.id = urm.user_id
+  join `role` r on urm.role_id = r.id
+
+[2022-05-31][16:56:38][rocket_demo::controller::user][ERROR] user query error for log test
+[2022-05-31][16:56:38][_][INFO] [1;49;39mOutcome:[0m [49;32mSuccess[0m
+[2022-05-31][16:56:38][_][INFO] [32mResponse succeeded.[0m
+[2022-05-31][16:58:43][rocket::server][WARN] Received SIGINT. Requesting shutdown.
+[2022-05-31][16:58:43][rocket::server][INFO] Shutdown requested. Waiting for pending I/O...
+[2022-05-31][16:58:43][rocket::server][INFO] Graceful shutdown completed successfully.
+[2022-05-31][16:58:48][rocket::launch][INFO] 🔧 Configured for debug.
+[2022-05-31][16:58:48][rocket::launch_][INFO] address: [1;49;39m0.0.0.0[0m
+[2022-05-31][16:58:48][rocket::launch_][INFO] port: [1;49;39m8080[0m
+[2022-05-31][16:58:48][rocket::launch_][INFO] workers: [1;49;39m20[0m
+[2022-05-31][16:58:48][rocket::launch_][INFO] ident: [1;49;39mRocket[0m
+[2022-05-31][16:58:48][rocket::launch_][INFO] limits: [1;49;39mbytes = 8KiB, data-form = 2MiB, file = 1MiB, file/jpg = 5MiB, form = 64kB, json = 1MiB, msgpack = 2MiB, string = 8KiB[0m
+[2022-05-31][16:58:48][rocket::launch_][INFO] temp dir: [1;49;39m/tmp[0m
+[2022-05-31][16:58:48][rocket::launch_][INFO] http/2: [1;49;39mtrue[0m
+[2022-05-31][16:58:48][rocket::launch_][INFO] keep-alive: [1;49;39m5[0m[1;49;39ms[0m
+[2022-05-31][16:58:48][rocket::launch_][INFO] tls: [1;49;39mdisabled[0m
+[2022-05-31][16:58:48][rocket::launch_][INFO] secret key: [1;49;39m[provided][0m
+[2022-05-31][16:58:48][rocket::launch_][INFO] shutdown: [1;49;39mctrlc = true, force = true, signals = [SIGTERM, SIGHUP], grace = 5s, mercy = 5s[0m
+[2022-05-31][16:58:48][rocket::launch_][INFO] log level: [1;49;39mdebug[0m
+[2022-05-31][16:58:48][rocket::launch_][INFO] cli colors: [1;49;39mtrue[0m
+[2022-05-31][16:58:48][rocket::launch][INFO] 📬 [35mRoutes[0m:
+[2022-05-31][16:58:48][rocket::launch_][INFO] [36m([0m[37mping[0m[36m)[0m [32mGET[0m [34m/ping[0m
+[2022-05-31][16:58:48][rocket::launch_][INFO] [36m([0m[37mtest[0m[36m)[0m [32mGET[0m [34m/test[0m
+[2022-05-31][16:58:48][rocket::launch_][INFO] [36m([0m[37mquery[0m[36m)[0m [32mGET[0m [34m/user/query?<page..>[0m
+[2022-05-31][16:58:48][rocket::launch_][INFO] [36m([0m[37mupdate[0m[36m)[0m [32mPUT[0m [34m/user/update[0m
+[2022-05-31][16:58:48][rocket::launch_][INFO] [36m([0m[37minsert[0m[36m)[0m [32mPOST[0m [34m/user/insert[0m
+[2022-05-31][16:58:48][rocket::launch_][INFO] [36m([0m[37mdelete[0m[36m)[0m [32mPOST[0m [34m/user/delete[0m
+[2022-05-31][16:58:48][rocket::launch_][INFO] [36m([0m[37mhello_path[0m[36m)[0m [32mGET[0m [34m/hello_path/<name>[0m
+[2022-05-31][16:58:48][rocket::launch][INFO] 📡 [35mFairings[0m:
+[2022-05-31][16:58:48][rocket::launch_][INFO] [1;49;39mShield[0m ([1;34mliftoff, response, singleton[0m)
+[2022-05-31][16:58:48][rocket::shield::shield][INFO] 🛡️ [35mShield[0m:
+[2022-05-31][16:58:48][_][INFO] Permissions-Policy: [49;39minterest-cohort=()[0m
+[2022-05-31][16:58:48][_][INFO] X-Frame-Options: [49;39mSAMEORIGIN[0m
+[2022-05-31][16:58:48][_][INFO] X-Content-Type-Options: [49;39mnosniff[0m
+[2022-05-31][16:58:48][rocket::launch][INFO] 🚀 [1;49;39mRocket has launched from[0m [1;4;49;39mhttp://0.0.0.0:8080[0m
+[2022-05-31][16:59:00][rocket::server][WARN] Received SIGINT. Requesting shutdown.
+[2022-05-31][16:59:00][rocket::server][INFO] Shutdown requested. Waiting for pending I/O...
+[2022-05-31][16:59:00][rocket::server][INFO] Graceful shutdown completed successfully.
+[2022-05-31][16:59:04][rocket::launch][INFO] 🔧 Configured for debug.
+[2022-05-31][16:59:04][rocket::launch_][INFO] address: [1;49;39m0.0.0.0[0m
+[2022-05-31][16:59:04][rocket::launch_][INFO] port: [1;49;39m8080[0m
+[2022-05-31][16:59:04][rocket::launch_][INFO] workers: [1;49;39m20[0m
+[2022-05-31][16:59:04][rocket::launch_][INFO] ident: [1;49;39mRocket[0m
+[2022-05-31][16:59:04][rocket::launch_][INFO] limits: [1;49;39mbytes = 8KiB, data-form = 2MiB, file = 1MiB, file/jpg = 5MiB, form = 64kB, json = 1MiB, msgpack = 2MiB, string = 8KiB[0m
+[2022-05-31][16:59:04][rocket::launch_][INFO] temp dir: [1;49;39m/tmp[0m
+[2022-05-31][16:59:04][rocket::launch_][INFO] http/2: [1;49;39mtrue[0m
+[2022-05-31][16:59:04][rocket::launch_][INFO] keep-alive: [1;49;39m5[0m[1;49;39ms[0m
+[2022-05-31][16:59:04][rocket::launch_][INFO] tls: [1;49;39mdisabled[0m
+[2022-05-31][16:59:04][rocket::launch_][INFO] secret key: [1;49;39m[provided][0m
+[2022-05-31][16:59:04][rocket::launch_][INFO] shutdown: [1;49;39mctrlc = true, force = true, signals = [SIGHUP, SIGTERM], grace = 5s, mercy = 5s[0m
+[2022-05-31][16:59:04][rocket::launch_][INFO] log level: [1;49;39mdebug[0m
+[2022-05-31][16:59:04][rocket::launch_][INFO] cli colors: [1;49;39mtrue[0m
+[2022-05-31][16:59:04][rocket::launch][INFO] 📬 [35mRoutes[0m:
+[2022-05-31][16:59:04][rocket::launch_][INFO] [36m([0m[37mping[0m[36m)[0m [32mGET[0m [34m/ping[0m
+[2022-05-31][16:59:04][rocket::launch_][INFO] [36m([0m[37mtest[0m[36m)[0m [32mGET[0m [34m/test[0m
+[2022-05-31][16:59:04][rocket::launch_][INFO] [36m([0m[37mquery[0m[36m)[0m [32mGET[0m [34m/user/query?<page..>[0m
+[2022-05-31][16:59:04][rocket::launch_][INFO] [36m([0m[37mupdate[0m[36m)[0m [32mPUT[0m [34m/user/update[0m
+[2022-05-31][16:59:04][rocket::launch_][INFO] [36m([0m[37minsert[0m[36m)[0m [32mPOST[0m [34m/user/insert[0m
+[2022-05-31][16:59:04][rocket::launch_][INFO] [36m([0m[37mdelete[0m[36m)[0m [32mPOST[0m [34m/user/delete[0m
+[2022-05-31][16:59:04][rocket::launch_][INFO] [36m([0m[37mhello_path[0m[36m)[0m [32mGET[0m [34m/hello_path/<name>[0m
+[2022-05-31][16:59:04][rocket::launch][INFO] 📡 [35mFairings[0m:
+[2022-05-31][16:59:04][rocket::launch_][INFO] [1;49;39mShield[0m ([1;34mliftoff, response, singleton[0m)
+[2022-05-31][16:59:04][rocket::shield::shield][INFO] 🛡️ [35mShield[0m:
+[2022-05-31][16:59:04][_][INFO] Permissions-Policy: [49;39minterest-cohort=()[0m
+[2022-05-31][16:59:04][_][INFO] X-Frame-Options: [49;39mSAMEORIGIN[0m
+[2022-05-31][16:59:04][_][INFO] X-Content-Type-Options: [49;39mnosniff[0m
+[2022-05-31][16:59:04][rocket::launch][INFO] 🚀 [1;49;39mRocket has launched from[0m [1;4;49;39mhttp://0.0.0.0:8080[0m
+[2022-05-31][16:59:05][rocket::server][WARN] Received SIGINT. Requesting shutdown.
+[2022-05-31][16:59:05][rocket::server][INFO] Shutdown requested. Waiting for pending I/O...
+[2022-05-31][16:59:05][rocket::server][INFO] Graceful shutdown completed successfully.
+[2022-05-31][17:00:22][rocket::launch][INFO] 🔧 Configured for debug.
+[2022-05-31][17:00:22][rocket::launch_][INFO] address: [1;49;39m0.0.0.0[0m
+[2022-05-31][17:00:22][rocket::launch_][INFO] port: [1;49;39m8080[0m
+[2022-05-31][17:00:22][rocket::launch_][INFO] workers: [1;49;39m20[0m
+[2022-05-31][17:00:22][rocket::launch_][INFO] ident: [1;49;39mRocket[0m
+[2022-05-31][17:00:22][rocket::launch_][INFO] limits: [1;49;39mbytes = 8KiB, data-form = 2MiB, file = 1MiB, file/jpg = 5MiB, form = 64kB, json = 1MiB, msgpack = 2MiB, string = 8KiB[0m
+[2022-05-31][17:00:22][rocket::launch_][INFO] temp dir: [1;49;39m/tmp[0m
+[2022-05-31][17:00:22][rocket::launch_][INFO] http/2: [1;49;39mtrue[0m
+[2022-05-31][17:00:22][rocket::launch_][INFO] keep-alive: [1;49;39m5[0m[1;49;39ms[0m
+[2022-05-31][17:00:22][rocket::launch_][INFO] tls: [1;49;39mdisabled[0m
+[2022-05-31][17:00:22][rocket::launch_][INFO] secret key: [1;49;39m[provided][0m
+[2022-05-31][17:00:22][rocket::launch_][INFO] shutdown: [1;49;39mctrlc = true, force = true, signals = [SIGTERM, SIGHUP], grace = 5s, mercy = 5s[0m
+[2022-05-31][17:00:22][rocket::launch_][INFO] log level: [1;49;39mdebug[0m
+[2022-05-31][17:00:22][rocket::launch_][INFO] cli colors: [1;49;39mtrue[0m
+[2022-05-31][17:00:22][rocket::launch][INFO] 📬 [35mRoutes[0m:
+[2022-05-31][17:00:22][rocket::launch_][INFO] [36m([0m[37mping[0m[36m)[0m [32mGET[0m [34m/ping[0m
+[2022-05-31][17:00:22][rocket::launch_][INFO] [36m([0m[37mtest[0m[36m)[0m [32mGET[0m [34m/test[0m
+[2022-05-31][17:00:22][rocket::launch_][INFO] [36m([0m[37mquery[0m[36m)[0m [32mGET[0m [34m/user/query?<page..>[0m
+[2022-05-31][17:00:22][rocket::launch_][INFO] [36m([0m[37mupdate[0m[36m)[0m [32mPUT[0m [34m/user/update[0m
+[2022-05-31][17:00:22][rocket::launch_][INFO] [36m([0m[37minsert[0m[36m)[0m [32mPOST[0m [34m/user/insert[0m
+[2022-05-31][17:00:22][rocket::launch_][INFO] [36m([0m[37mdelete[0m[36m)[0m [32mPOST[0m [34m/user/delete[0m
+[2022-05-31][17:00:22][rocket::launch_][INFO] [36m([0m[37mhello_path[0m[36m)[0m [32mGET[0m [34m/hello_path/<name>[0m
+[2022-05-31][17:00:22][rocket::launch][INFO] 📡 [35mFairings[0m:
+[2022-05-31][17:00:22][rocket::launch_][INFO] [1;49;39mShield[0m ([1;34mliftoff, response, singleton[0m)
+[2022-05-31][17:00:22][rocket::shield::shield][INFO] 🛡️ [35mShield[0m:
+[2022-05-31][17:00:22][_][INFO] Permissions-Policy: [49;39minterest-cohort=()[0m
+[2022-05-31][17:00:22][_][INFO] X-Frame-Options: [49;39mSAMEORIGIN[0m
+[2022-05-31][17:00:22][_][INFO] X-Content-Type-Options: [49;39mnosniff[0m
+[2022-05-31][17:00:22][rocket::launch][INFO] 🚀 [1;49;39mRocket has launched from[0m [1;4;49;39mhttp://0.0.0.0:8080[0m
+[2022-05-31][17:00:32][rocket::server][WARN] Received SIGINT. Requesting shutdown.
+[2022-05-31][17:00:32][rocket::server][INFO] Shutdown requested. Waiting for pending I/O...
+[2022-05-31][17:00:32][rocket::server][INFO] Graceful shutdown completed successfully.
+[2022-05-31][17:00:35][rocket::launch][INFO] 🔧 Configured for debug.
+[2022-05-31][17:00:35][rocket::launch_][INFO] address: [1;49;39m0.0.0.0[0m
+[2022-05-31][17:00:35][rocket::launch_][INFO] port: [1;49;39m8080[0m
+[2022-05-31][17:00:35][rocket::launch_][INFO] workers: [1;49;39m20[0m
+[2022-05-31][17:00:35][rocket::launch_][INFO] ident: [1;49;39mRocket[0m
+[2022-05-31][17:00:35][rocket::launch_][INFO] limits: [1;49;39mbytes = 8KiB, data-form = 2MiB, file = 1MiB, file/jpg = 5MiB, form = 64kB, json = 1MiB, msgpack = 2MiB, string = 8KiB[0m
+[2022-05-31][17:00:35][rocket::launch_][INFO] temp dir: [1;49;39m/tmp[0m
+[2022-05-31][17:00:35][rocket::launch_][INFO] http/2: [1;49;39mtrue[0m
+[2022-05-31][17:00:35][rocket::launch_][INFO] keep-alive: [1;49;39m5[0m[1;49;39ms[0m
+[2022-05-31][17:00:35][rocket::launch_][INFO] tls: [1;49;39mdisabled[0m
+[2022-05-31][17:00:35][rocket::launch_][INFO] secret key: [1;49;39m[provided][0m
+[2022-05-31][17:00:35][rocket::launch_][INFO] shutdown: [1;49;39mctrlc = true, force = true, signals = [SIGHUP, SIGTERM], grace = 5s, mercy = 5s[0m
+[2022-05-31][17:00:35][rocket::launch_][INFO] log level: [1;49;39mdebug[0m
+[2022-05-31][17:00:35][rocket::launch_][INFO] cli colors: [1;49;39mtrue[0m
+[2022-05-31][17:00:35][rocket::launch][INFO] 📬 [35mRoutes[0m:
+[2022-05-31][17:00:35][rocket::launch_][INFO] [36m([0m[37mping[0m[36m)[0m [32mGET[0m [34m/ping[0m
+[2022-05-31][17:00:35][rocket::launch_][INFO] [36m([0m[37mtest[0m[36m)[0m [32mGET[0m [34m/test[0m
+[2022-05-31][17:00:35][rocket::launch_][INFO] [36m([0m[37mquery[0m[36m)[0m [32mGET[0m [34m/user/query?<page..>[0m
+[2022-05-31][17:00:35][rocket::launch_][INFO] [36m([0m[37mupdate[0m[36m)[0m [32mPUT[0m [34m/user/update[0m
+[2022-05-31][17:00:35][rocket::launch_][INFO] [36m([0m[37minsert[0m[36m)[0m [32mPOST[0m [34m/user/insert[0m
+[2022-05-31][17:00:35][rocket::launch_][INFO] [36m([0m[37mdelete[0m[36m)[0m [32mPOST[0m [34m/user/delete[0m
+[2022-05-31][17:00:35][rocket::launch_][INFO] [36m([0m[37mhello_path[0m[36m)[0m [32mGET[0m [34m/hello_path/<name>[0m
+[2022-05-31][17:00:35][rocket::launch][INFO] 📡 [35mFairings[0m:
+[2022-05-31][17:00:35][rocket::launch_][INFO] [1;49;39mShield[0m ([1;34mliftoff, response, singleton[0m)
+[2022-05-31][17:00:35][rocket::shield::shield][INFO] 🛡️ [35mShield[0m:
+[2022-05-31][17:00:35][_][INFO] Permissions-Policy: [49;39minterest-cohort=()[0m
+[2022-05-31][17:00:35][_][INFO] X-Content-Type-Options: [49;39mnosniff[0m
+[2022-05-31][17:00:35][_][INFO] X-Frame-Options: [49;39mSAMEORIGIN[0m
+[2022-05-31][17:00:35][rocket::launch][INFO] 🚀 [1;49;39mRocket has launched from[0m [1;4;49;39mhttp://0.0.0.0:8080[0m
+[2022-05-31][17:00:43][rocket::server][WARN] Received SIGINT. Requesting shutdown.
+[2022-05-31][17:00:43][rocket::server][INFO] Shutdown requested. Waiting for pending I/O...
+[2022-05-31][17:00:43][rocket::server][INFO] Graceful shutdown completed successfully.
+[2022-05-31][17:01:10][rocket::launch][INFO] 🔧 Configured for debug.
+[2022-05-31][17:01:10][rocket::launch_][INFO] address: [1;49;39m0.0.0.0[0m
+[2022-05-31][17:01:10][rocket::launch_][INFO] port: [1;49;39m8080[0m
+[2022-05-31][17:01:10][rocket::launch_][INFO] workers: [1;49;39m20[0m
+[2022-05-31][17:01:10][rocket::launch_][INFO] ident: [1;49;39mRocket[0m
+[2022-05-31][17:01:10][rocket::launch_][INFO] limits: [1;49;39mbytes = 8KiB, data-form = 2MiB, file = 1MiB, file/jpg = 5MiB, form = 64kB, json = 1MiB, msgpack = 2MiB, string = 8KiB[0m
+[2022-05-31][17:01:10][rocket::launch_][INFO] temp dir: [1;49;39m/tmp[0m
+[2022-05-31][17:01:10][rocket::launch_][INFO] http/2: [1;49;39mtrue[0m
+[2022-05-31][17:01:10][rocket::launch_][INFO] keep-alive: [1;49;39m5[0m[1;49;39ms[0m
+[2022-05-31][17:01:10][rocket::launch_][INFO] tls: [1;49;39mdisabled[0m
+[2022-05-31][17:01:10][rocket::launch_][INFO] secret key: [1;49;39m[provided][0m
+[2022-05-31][17:01:10][rocket::launch_][INFO] shutdown: [1;49;39mctrlc = true, force = true, signals = [SIGHUP, SIGTERM], grace = 5s, mercy = 5s[0m
+[2022-05-31][17:01:10][rocket::launch_][INFO] log level: [1;49;39mdebug[0m
+[2022-05-31][17:01:10][rocket::launch_][INFO] cli colors: [1;49;39mtrue[0m
+[2022-05-31][17:01:10][rocket::launch][INFO] 📬 [35mRoutes[0m:
+[2022-05-31][17:01:10][rocket::launch_][INFO] [36m([0m[37mping[0m[36m)[0m [32mGET[0m [34m/ping[0m
+[2022-05-31][17:01:10][rocket::launch_][INFO] [36m([0m[37mtest[0m[36m)[0m [32mGET[0m [34m/test[0m
+[2022-05-31][17:01:10][rocket::launch_][INFO] [36m([0m[37mquery[0m[36m)[0m [32mGET[0m [34m/user/query?<page..>[0m
+[2022-05-31][17:01:10][rocket::launch_][INFO] [36m([0m[37mupdate[0m[36m)[0m [32mPUT[0m [34m/user/update[0m
+[2022-05-31][17:01:10][rocket::launch_][INFO] [36m([0m[37minsert[0m[36m)[0m [32mPOST[0m [34m/user/insert[0m
+[2022-05-31][17:01:10][rocket::launch_][INFO] [36m([0m[37mdelete[0m[36m)[0m [32mPOST[0m [34m/user/delete[0m
+[2022-05-31][17:01:10][rocket::launch_][INFO] [36m([0m[37mhello_path[0m[36m)[0m [32mGET[0m [34m/hello_path/<name>[0m
+[2022-05-31][17:01:10][rocket::launch][INFO] 📡 [35mFairings[0m:
+[2022-05-31][17:01:10][rocket::launch_][INFO] [1;49;39mShield[0m ([1;34mliftoff, response, singleton[0m)
+[2022-05-31][17:01:10][rocket::shield::shield][INFO] 🛡️ [35mShield[0m:
+[2022-05-31][17:01:10][_][INFO] X-Content-Type-Options: [49;39mnosniff[0m
+[2022-05-31][17:01:10][_][INFO] Permissions-Policy: [49;39minterest-cohort=()[0m
+[2022-05-31][17:01:10][_][INFO] X-Frame-Options: [49;39mSAMEORIGIN[0m
+[2022-05-31][17:01:10][rocket::launch][INFO] 🚀 [1;49;39mRocket has launched from[0m [1;4;49;39mhttp://0.0.0.0:8080[0m
+[2022-05-31][17:01:11][rocket::server][WARN] Received SIGINT. Requesting shutdown.
+[2022-05-31][17:01:11][rocket::server][INFO] Shutdown requested. Waiting for pending I/O...
+[2022-05-31][17:01:11][rocket::server][INFO] Graceful shutdown completed successfully.

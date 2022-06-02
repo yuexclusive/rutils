@@ -24,6 +24,8 @@ where
     msg: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     code: Option<Code>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    total: Option<i64>,
 }
 
 pub type JsonResult<T> = status::Custom<Json<Result<T>>>;
@@ -33,23 +35,46 @@ pub fn result<T>(
     code: Option<Code>,
     msg: Option<String>,
     data: Option<T>,
+    total: Option<i64>,
 ) -> JsonResult<T>
 where
     T: Serialize,
 {
     let res = Result {
-        data: data,
-        msg: msg,
-        code: code,
+        data,
+        msg,
+        code,
+        total,
     };
     status::Custom(status, Json(res))
 }
 
-pub fn ok<T>(data: T) -> JsonResult<T>
+pub fn ok<'a>() -> JsonResult<()> {
+    result(Status::Ok, Some(Code::Ok), None, None, None)
+}
+
+pub fn ok_with_msg(msg: &str) -> JsonResult<()> {
+    result(
+        Status::Ok,
+        Some(Code::Ok),
+        Some(msg.to_string()),
+        None,
+        None,
+    )
+}
+
+pub fn ok_with_data<'a, T>(data: T) -> JsonResult<T>
 where
     T: Serialize,
 {
-    result(Status::Ok, Some(Code::Ok), None, Some(data))
+    result(Status::Ok, Some(Code::Ok), None, Some(data), None)
+}
+
+pub fn ok_with_data_pagination<T>(data: T, total: i64) -> JsonResult<T>
+where
+    T: Serialize,
+{
+    result(Status::Ok, Some(Code::Ok), None, Some(data), Some(total))
 }
 
 pub fn error<T>(err: impl Error) -> JsonResult<T>
@@ -60,6 +85,20 @@ where
         Status::InternalServerError,
         Some(Code::Err),
         Some(err.to_string()),
+        None,
+        None,
+    )
+}
+
+pub fn error_with_msg<T>(msg: &str) -> JsonResult<T>
+where
+    T: Serialize,
+{
+    result(
+        Status::InternalServerError,
+        Some(Code::Err),
+        Some(msg.to_string()),
+        None,
         None,
     )
 }

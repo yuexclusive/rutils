@@ -1,11 +1,19 @@
+.PHONY: rust-builder
+rust-builder:
+	docker build --rm -f rust-builder.Dockerfile -t rust-builder:latest .
+
 .PHONY: build
 build:
-	cargo build --target=aarch64-unknown-linux-musl --release --target-dir=./target
-	docker build --rm -t rocket:latest .
+	docker run --rm -it -w /app -v /Users/yu/rust/rutils/rocket_demo:/app -v /Users/yu/rust/rutils/temp:/root/.cargo/registry rust-builder:latest cargo build --target=aarch64-unknown-linux-musl --release
+
+.PHONY: image
+image: build
+	docker rmi rocket_demo:latest
+	docker build -t rocket_demo:latest .
 
 
 .PHONY: run
 run:
 	# docker stop rocket_demo
-	# docker rm rocket_demo
-	docker run -itd -p 8080:8080 --name=rocket_demo rocket
+	# docker stop rocket_demo
+	docker run --rm -itd -p 8080:8080 --name=rocket_demo rocket_demo

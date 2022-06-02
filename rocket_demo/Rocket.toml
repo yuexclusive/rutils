@@ -1,20 +1,20 @@
 [default]
 address = "0.0.0.0"
-port = 8080
-workers = 20
-keep_alive = 5
-ident = "Rocket"
-log_level = "debug"
-temp_dir = "/tmp"
 cli_colors = true
+ident = "Rocket"
+keep_alive = 5
+log_level = "critical"
+port = 8080
+temp_dir = "/tmp"
+workers = 20
 ## NOTE: Don't (!) use this key! Generate your own!
 secret_key = "hPRYyVRiMyxpw5sBB1XeCMN1kFsDCqKvBi2QJxBVHQk="
 
 [default.limits]
+"file/jpg" = "5 MiB"
 form = "64 kB"
 json = "1 MiB"
 msgpack = "2 MiB"
-"file/jpg" = "5 MiB"
 
 [default.tls]
 certs = "path/to/cert-chain.pem"
@@ -22,6 +22,6 @@ key = "path/to/key.pem"
 
 [default.shutdown]
 ctrlc = true
-signals = ["term", "hup"]
 grace = 5
 mercy = 5
+signals = ["term", "hup"]
