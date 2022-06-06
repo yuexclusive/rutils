@@ -20,7 +20,7 @@ pub async fn test() -> JsonResult<&'static str> {
 
 #[get("/ping")]
 pub async fn ping() -> JsonResult<()> {
-    ok_with_msg("pong--!")
+    ok_with_msg("pong!!")
 }
 
 #[launch]

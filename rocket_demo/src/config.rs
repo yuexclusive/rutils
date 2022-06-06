@@ -24,10 +24,17 @@ pub struct Mysql {
 }
 
 #[derive(Deserialize, Serialize)]
+pub struct MeiliSearch {
+    pub address: String,
+    pub api_key: String,
+}
+
+#[derive(Deserialize, Serialize)]
 pub struct Config {
     pub name: String,
     pub mysql: Mysql,
     pub redis: Redis,
+    pub meilisearch: MeiliSearch,
 }
 
 #[cfg(test)]

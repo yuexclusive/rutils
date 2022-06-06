@@ -1,8 +1,12 @@
 name = "rocket_demo"
 
 [mysql]
-address = "mysql://test:123@192.168.0.243:3306/evolve"
+address = "mysql://test:123@127.0.0.1:3306/evolve"
+
+[meilisearch]
+address = "http://localhost:7700"
+api_key = "masterKey"
 
 [redis]
-address = "redis://192.168.0.243:6379/"
+address = "redis://127.0.0.1:6379/"
 password = ""

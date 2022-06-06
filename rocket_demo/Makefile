@@ -4,7 +4,7 @@ rust-builder:
 
 .PHONY: build
 build:
-	docker run --rm -it -w /app -v /Users/yu/rust/rutils/rocket_demo:/app -v /Users/yu/rust/rutils/temp:/root/.cargo/registry rust-builder:latest cargo build --target=aarch64-unknown-linux-musl --release
+	docker run --rm -it -w /app -v /Users/yu/rust/rutils/rocket_demo:/app rust-builder:latest cargo build --target=aarch64-unknown-linux-musl --release
 
 .PHONY: image
 image: build

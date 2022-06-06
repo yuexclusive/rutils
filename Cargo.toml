@@ -10,5 +10,4 @@ members = [
   "./leetcode",
   "./logger",
   "./serde_demo",
-  "./config"
 ]

@@ -1,5 +1,4 @@
-use clap::{Parser};
-
+use clap::Parser;
 #[derive(Parser)]
 #[clap(author, version, about, long_about = None)]
 struct Args {
@@ -15,5 +14,4 @@ fn main() {
     let args = Args::parse();
     assert_eq!(args.name, "hehe");
     assert_eq!(args.count, None);
-
 }
