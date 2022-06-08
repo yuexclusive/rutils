@@ -13,4 +13,6 @@ impl Drop for Person {
 fn main() {
     let a = 1;
     println!("{}", a);
+
+    let bb = 2;
 }
