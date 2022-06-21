@@ -1,0 +1,6 @@
+make --dry-run --always-make --keep-going --print-directory
+make: Entering directory `/Users/yu/rust/rutils'
+make: Leaving directory `/Users/yu/rust/rutils'
+ 
+make: *** No targets specified and no makefile found.  Stop.
+

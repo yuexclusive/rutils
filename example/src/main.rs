@@ -1,16 +1,40 @@
-#[derive(Debug)]
-struct Person {
-    age: i32,
+// src/main.rs
+use kong_rust_pdk::{macros::*, pdk::Pdk, server, Error, Plugin};
+
+const VERSION: &str = "0.1";
+const PRIORITY: usize = 1;
+
+#[tokio::main]
+async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    server::start::<Config>(VERSION, PRIORITY).await?;
+
+    Ok(())
 }
 
-impl Drop for Person {
-    fn drop(&mut self) {
-        println!("{}", self.age);
-        println!("{}", "person droped")
+#[plugin_config]
+struct Config {
+    message: String,
+}
+
+impl Default for Config {
+    fn default() -> Self {
+        Self {
+            message: String::from("default message"),
+        }
     }
 }
 
-fn main() {
-    let a = 1;
-    println!("{}", a);
+#[plugin_impl]
+impl Plugin for Config {
+    async fn access<T: Pdk>(&self, kong: &mut T) -> Result<(), Error> {
+        let method = kong.request().get_method().await?;
+
+        kong.response().set_status(204).await?;
+
+        kong.response()
+            .set_header("x-hello-from-rust", &method)
+            .await?;
+
+        Ok(())
+    }
 }

@@ -208,7 +208,7 @@ impl Solution {
 }
 
 impl Solution {
-    pub fn hammingWeight(n: u32) -> i32 {
+    pub fn hamming_weight(n: u32) -> i32 {
         let (mut res, mut n) = (0, n);
         while n != 0 {
             res += n & 1;

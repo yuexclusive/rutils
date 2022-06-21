@@ -10,11 +10,11 @@ impl Solution {
 }
 
 impl Solution {
-    pub fn hammingWeight(n: u32) -> i32 {
+    pub fn hamming_weight(n: u32) -> i32 {
         match n {
             0 => 0,
             1 => 1,
-            _ => (n & 1) as i32 + Self::hammingWeight(n >> 1),
+            _ => (n & 1) as i32 + Self::hamming_weight(n >> 1),
         }
     }
 }
