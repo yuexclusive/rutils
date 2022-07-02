@@ -4,7 +4,7 @@ pub mod kafka;
 pub mod meilisearch;
 pub mod redis_util;
 
-use rocket::serde::Deserialize;
+use rocket::serde::{Deserialize,Serialize};
 
 // pub type BasicResult<T, E = Box<dyn Error>> = Result<T, E>;
 pub type BasicResult<T, E = crate::common::error::ErrorKind> = Result<T, E>;
@@ -25,7 +25,7 @@ impl Pagination {
     }
 }
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Serialize)]
 pub struct ID {
     pub id: i64,
 }

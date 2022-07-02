@@ -1,13 +1,14 @@
 use super::guard::Auth;
-use crate::common::Pagination;
 use crate::controller::common::*;
 use crate::service::user as user_service;
+use crate::{common::Pagination, dao::user::UserType};
 use rocket::serde::{json::Json, Deserialize, Serialize};
 
 // #[derive(Serialize, Component)]
 #[derive(Serialize)]
 pub struct User {
     id: i64,
+    r#type: UserType,
     email: String,
     name: Option<String>,
     mobile: Option<String>,
@@ -25,7 +26,7 @@ pub async fn query(page: Pagination) -> JsonResult<Vec<User>> {
             data.0.into_iter().for_each(|x| {
                 res.push(User {
                     id: x.id,
-                    
+                    r#type: x.r#type,
                     email: x.email,
                     name: x.name,
                     mobile: x.mobile,
@@ -46,6 +47,7 @@ pub async fn get(id: i64, _auth: Auth) -> JsonResult<User> {
         Ok(x) => {
             let data = User {
                 id: x.id,
+                r#type: x.r#type,
                 email: x.email,
                 name: x.name,
                 mobile: x.mobile,
@@ -78,7 +80,7 @@ pub async fn insert(req: Json<UserInsertReq<'_>>) -> JsonResult<i64> {
         .insert(req.email, req.pwd, req.name, req.mobile)
         .await
     {
-        Ok(insert_id) => ok_with_data(insert_id),
+        Ok(id) => ok_with_data(id),
         Err(err) => error(err),
     }
 }

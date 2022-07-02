@@ -1,4 +1,4 @@
-use crate::common::error::{self, ErrorKind};
+use crate::common::error::{ErrorKind, ToError};
 use crate::common::BasicResult;
 use crate::service::user as user_service;
 use rocket::{
@@ -32,14 +32,11 @@ impl<'r> FromRequest<'r> for Auth {
         match authentication {
             Some(token) => match Self::valid(token).await {
                 Ok(auth) => Outcome::Success(auth),
-                Err(err) => Outcome::Failure((
-                    rocket::http::Status::Unauthorized,
-                    error::basic(&err.to_string()),
-                )),
+                Err(err) => Outcome::Failure((rocket::http::Status::Unauthorized, err)),
             },
             None => Outcome::Failure((
                 rocket::http::Status::Unauthorized,
-                error::basic("token missing"),
+                "token missing".to_basic_error(),
             )),
         }
     }

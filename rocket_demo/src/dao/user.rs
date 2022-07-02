@@ -2,15 +2,41 @@ use std::marker::PhantomData;
 
 use crate::common::db::SqlResult;
 use crate::common::Pagination;
+use serde::{Deserialize, Serialize};
 use sqlx::{
     types::chrono::{self},
     Executor, Postgres,
 };
 
+#[derive(sqlx::Type, Debug, Serialize, Deserialize)]
+#[sqlx(rename_all = "snake_case")]
+#[serde(rename_all(serialize = "snake_case",deserialize = "snake_case"))]
+pub enum UserType {
+    Normal,
+    Admin,
+    SuperAdmin,
+}
+
+// impl sqlx::postgres::PgHasArrayType for UserType {
+//     fn array_type_info() -> sqlx::postgres::PgTypeInfo {
+//         sqlx::postgres::PgTypeInfo::with_name("usertype")
+//     }
+// }
+
+// impl From<UserType> for i32 {
+//     fn from(t: UserType) -> Self {
+//         match t {
+//             UserType::Normal => 1,
+//             UserType::Admin => 2,
+//             UserType::SuperAdmin => 3,
+//         }
+//     }
+// }
+
 #[derive(Debug)]
 pub struct User {
     pub id: i64,
-    pub r#type: i32, // 1. normal 2. admin
+    pub r#type: UserType, // 1. normal 2. admin 3.super admin
     pub email: String,
     pub name: Option<String>,
     pub salt: String,
@@ -66,7 +92,17 @@ where u.deleted_at is null
             User,
             r#"
 select
-     *
+     id,
+     "type" as "type!: UserType",
+     email,
+     "name",
+     salt,
+     pwd,
+     mobile,
+     laston,
+     created_at,
+     updated_at,
+     deleted_at
 from "user" u
 where u.deleted_at is null
 order by u.id
@@ -84,7 +120,17 @@ limit $1 offset $2
             User,
             r#"
 select
-     *
+    id,
+    "type" as "type!: UserType",
+    email,
+    "name",
+    salt,
+    pwd,
+    mobile,
+    laston,
+    created_at,
+    updated_at,
+    deleted_at
 from "user" 
 where id = $1
             "#,
@@ -101,7 +147,17 @@ where id = $1
             User,
             r#"
 select
-     *
+    id,
+    "type" as "type!: UserType",
+    email,
+    "name",
+    salt,
+    pwd,
+    mobile,
+    laston,
+    created_at,
+    updated_at,
+    deleted_at
 from "user" 
 where email = $1
             "#,
@@ -123,7 +179,8 @@ where email = $1
     ) -> SqlResult<i64> {
         let created_at = chrono::Local::now().naive_local();
         let res = sqlx::query!(
-            r#"insert into "user" (email,pwd,salt,name,mobile,created_at) values ($1,$2,$3,$4,$5,$6) RETURNING id"#,
+            r#"insert into "user" (type,email,pwd,salt,name,mobile,created_at) values ($1,$2,$3,$4,$5,$6,$7) RETURNING id"#,
+            UserType::Normal as UserType,
             email,
             pwd,
             salt,

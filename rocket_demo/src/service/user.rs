@@ -1,9 +1,10 @@
 use crate::common::db::conn;
-use crate::common::error;
+use crate::common::error::ToError;
 use crate::common::redis_util;
 use crate::common::BasicResult;
 use crate::common::Pagination;
 use crate::dao::user as user_dao;
+use crate::dao::user::UserType;
 use jsonwebtoken::{decode, encode, Algorithm, DecodingKey, EncodingKey, Header, Validation};
 use redis::ToRedisArgs;
 use redis_encoding_derive::ToRedisArgs;
@@ -52,34 +53,34 @@ impl Service {
         let pwd = Self::hash_password(pwd, salt);
 
         if pwd != pwd_hashed {
-            return Err(error::basic("invalid password"));
+            return Err("invalid password".to_basic_error());
         }
 
         Ok(())
     }
 
     fn validate_email(email: &str) -> BasicResult<()> {
-        let reg = Regex::new(r#"\w[-\w.+]*@([A-Za-z0-9][-A-Za-z0-9]+\.)+[A-Za-z]{2,14}"#).unwrap();
+        let reg = Regex::new(r#"\w[-\w.+]*@([A-Za-z0-9][-A-Za-z0-9]+\.)+[A-Za-z]{2,14}"#)?;
         if !reg.is_match(email) {
-            return Err(error::validation("invalid email"));
+            return Err("invalid email".to_validation_error());
         }
         Ok(())
     }
 
     fn validate_mobile(mobile: &str) -> BasicResult<()> {
-        let reg = Regex::new(r#"0?(13|14|15|17|18|19)[0-9]{9}"#).unwrap();
+        let reg = Regex::new(r#"0?(13|14|15|17|18|19)[0-9]{9}"#)?;
         if !reg.is_match(mobile) {
-            return Err(error::validation("invalid mobile"));
+            return Err("invalid mobile".to_validation_error());
         }
         Ok(())
     }
 
     fn validate_pwd(pwd: &str) -> BasicResult<()> {
-        let reg = Regex::new(r#"^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,}$"#).unwrap(); //6位字母+数字
+        let reg = Regex::new(r#"^[a-zA-Z]{1}\w{5,17}$"#)?; //6位字母+数字,字母开头
         if !reg.is_match(pwd) {
-            return Err(error::validation(
-                "invalid passowrd: length>=6, a-z and 0-9 is demanded",
-            ));
+            return Err(
+                "invalid passowrd: length>=6, a-z and 0-9 is demanded".to_validation_error()
+            );
         }
         Ok(())
     }
@@ -142,9 +143,9 @@ impl Service {
         Self::validate_pwd(old_pwd)?;
         Self::validate_pwd(old_pwd)?;
         if old_pwd == new_pwd {
-            return Err(error::validation(
-                "new password can not be the same as old password !!!",
-            ));
+            return Err(
+                "new password can not be the same as old password !!!".to_validation_error()
+            );
         }
         let user = self.get_by_email(email).await?;
 
@@ -194,6 +195,7 @@ impl Service {
             user.email.clone(),
             CurrentUser {
                 id: user.id,
+                r#type: user.r#type,
                 email: user.email,
                 name: user.name,
                 mobile: user.mobile,
@@ -233,6 +235,7 @@ impl Service {
 #[derive(Debug, Serialize, Deserialize, ToRedisArgs)]
 pub struct CurrentUser {
     pub id: i64,
+    pub r#type: UserType,
     pub email: String,
     pub name: Option<String>,
     pub mobile: Option<String>,

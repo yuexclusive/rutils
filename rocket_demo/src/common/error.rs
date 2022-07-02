@@ -7,14 +7,6 @@ pub enum ErrorKind {
     OtherError(String),
 }
 
-pub fn basic(msg: &str) -> ErrorKind {
-    ErrorKind::BasicError(msg.to_string())
-}
-
-pub fn validation(msg: &str) -> ErrorKind {
-    ErrorKind::ValidationError(msg.to_string())
-}
-
 impl<'a> Display for ErrorKind {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
@@ -56,5 +48,27 @@ impl From<jsonwebtoken::errors::Error> for ErrorKind {
 impl From<std::time::SystemTimeError> for ErrorKind {
     fn from(err: std::time::SystemTimeError) -> Self {
         ErrorKind::OtherError(err.to_string())
+    }
+}
+
+impl From<regex::Error> for ErrorKind {
+    fn from(err: regex::Error) -> Self {
+        ErrorKind::OtherError(err.to_string())
+    }
+}
+
+pub trait ToError {
+    fn to_basic_error(&self) -> ErrorKind;
+    fn to_validation_error(&self) -> ErrorKind;
+}
+
+impl ToError for &str
+{
+    fn to_basic_error(&self) -> ErrorKind {
+        ErrorKind::BasicError(self.to_string())
+    }
+
+    fn to_validation_error(&self) -> ErrorKind {
+        ErrorKind::ValidationError(self.to_string())
     }
 }
