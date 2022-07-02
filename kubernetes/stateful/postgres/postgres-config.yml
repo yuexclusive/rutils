@@ -1,0 +1,81 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  namespace: stateful
+  name: postgres-config
+data:
+  evolve.sql: |
+    drop database if exists evolve;
+
+    create database evolve;
+
+    \c evolve;
+
+    drop table if exists role;
+    create table role (
+      id serial8 primary key not null,
+      name varchar(255) not null,
+      description varchar(255) null,
+      created_at timestamp not null default CURRENT_TIMESTAMP,
+      updated_at timestamp null,
+      deleted_at timestamp null
+    );
+    comment on table role is '角色表';
+    comment on column role.name is '角色名称';
+
+    insert into role(id,name,description) values (1,'adminstrator','');
+
+    drop table if exists "user";
+    create table "user" (
+      id serial8 primary key not null,
+      email VARCHAR(255) NOT NULL,
+      salt VARCHAR(255) NOT NULL,
+      pwd VARCHAR(255) DEFAULT NULL,
+      name VARCHAR(16) DEFAULT NULL,
+      mobile VARCHAR(16) DEFAULT NULL,
+      lastOn timestamp DEFAULT NULL,
+      avatar VARCHAR(255) DEFAULT NULL,
+      created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      updated_at TIMESTAMP NULL,
+      deleted_at TIMESTAMP NULL
+    );
+    comment on table "user" is '用户表';
+
+    INSERT INTO "user"(id,email,salt,pwd,name,mobile,lastOn) 
+    VALUES (1,'453017973@qq.com','e18f5b2c-2df9-4d4d-aa96-b0edd7b2dd8b','86950062ba25c65a2695c3193f9c8bfa83587bc906e0bbe3e4b4e4f1ccec334b','super_admin','13100000000','2018-12-17 09:36:32');
+
+
+    DROP TABLE IF EXISTS user_role_map;
+    CREATE TABLE user_role_map (
+      id serial8 NOT NULL PRIMARY KEY,
+      user_id BIGINT NOT NULL,
+      role_id BIGINT NOT NULL
+    );
+
+    comment on table "user_role_map" is '用户角色映射表';
+
+    INSERT INTO user_role_map(id,user_id,role_id) VALUES(1,1,1);
+
+    drop table if exists "permission";
+    create table "permission" (
+      id serial8 primary key not null,
+      code BIGINT NOT NULL,
+      level INT not null,
+      name varchar(255) not null,
+      description varchar(255) null,
+      created_at timestamp not null default CURRENT_TIMESTAMP,
+      updated_at timestamp null,
+      deleted_at timestamp null
+    );
+    comment on table "permission" is '权限表';
+
+    drop table if exists "permission_role_map";
+    create table "permission_role_map" (
+      id serial8 NOT NULL PRIMARY KEY,
+      permission_code BIGINT NOT NULL,
+      role_id BIGINT NOT NULL
+    );
+    comment on table "permission_role_map" is '权限角色对应表';
+
+
+

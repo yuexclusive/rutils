@@ -1,7 +1,7 @@
+use crate::common::error;
 use rocket::http::Status;
 use rocket::response::status;
 use rocket::serde::{json::Json, Serialize};
-use std::error::Error;
 
 #[derive(Serialize)]
 // #[serde(untagged)]
@@ -14,7 +14,7 @@ pub enum Code {
 }
 
 #[derive(Serialize)]
-pub struct Result<T>
+pub struct ResultData<T>
 where
     T: Serialize,
 {
@@ -28,7 +28,7 @@ where
     total: Option<i64>,
 }
 
-pub type JsonResult<T> = status::Custom<Json<Result<T>>>;
+pub type JsonResult<T> = status::Custom<Json<ResultData<T>>>;
 
 pub fn result<T>(
     status: Status,
@@ -40,7 +40,7 @@ pub fn result<T>(
 where
     T: Serialize,
 {
-    let res = Result {
+    let res = ResultData {
         data,
         msg,
         code,
@@ -77,17 +77,22 @@ where
     result(Status::Ok, Some(Code::Ok), None, Some(data), Some(total))
 }
 
-pub fn error<T>(err: impl Error) -> JsonResult<T>
+pub fn error<T>(err: error::ErrorKind) -> JsonResult<T>
 where
     T: Serialize,
 {
-    result(
-        Status::InternalServerError,
-        Some(Code::Err),
-        Some(err.to_string()),
-        None,
-        None,
-    )
+    match err {
+        error::ErrorKind::ValidationError(msg) => {
+            result(Status::BadRequest, Some(Code::Err), Some(msg), None, None)
+        }
+        _ => result(
+            Status::InternalServerError,
+            Some(Code::Err),
+            Some(err.to_string()),
+            None,
+            None,
+        ),
+    }
 }
 
 pub fn error_with_msg<T>(msg: &str) -> JsonResult<T>

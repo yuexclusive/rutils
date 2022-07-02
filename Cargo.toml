@@ -1,14 +1,13 @@
 [workspace]
 
 members = [
-  "./time",
-  "./rocket_demo",
-  "./clap_demo",
-  "./design_pattern",
-  "./hello_macro",
-  "./hello_macro_derive",
-  "./leetcode",
-  "./logger",
-  "./serde_demo",
-  "./example"
+  # "./time",
+  "./rocket_demo", # "./clap_demo",
+  # "./design_pattern",
+  # "./hello_macro", # "./hello_macro_derive",
+  # "./leetcode",
+  # "./logger",
+  # "./serde_demo",
+  # "./example", # "./redis_demo",
+  # "./yew_app"
 ]

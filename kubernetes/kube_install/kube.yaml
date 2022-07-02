@@ -1,0 +1,28 @@
+apiVersion: kind.x-k8s.io/v1alpha4
+kind: Cluster
+name: my-k8s
+nodes:
+  - role: control-plane
+    extraMounts:
+      - hostPath: /Users/yu/docker_volumes
+        containerPath: /www
+      - hostPath: /var/run/docker.sock
+        containerPath: /var/run/docker.sock
+    extraPortMappings:
+      - containerPort: 30663
+        hostPort: 80
+        # optional: set the bind address on the host
+        # 0.0.0.0 is the current default
+        # listenAddress: "127.0.0.1"
+        listenAddress: "0.0.0.0"
+        # optional: set the protocol to one of TCP, UDP, SCTP.
+        # TCP is the default
+        protocol: TCP
+      - containerPort: 30701
+        hostPort: 6379
+        listenAddress: "0.0.0.0"
+        protocol: TCP
+      - containerPort: 30702
+        hostPort: 5432
+        listenAddress: "0.0.0.0"
+        protocol: TCP

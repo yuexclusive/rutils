@@ -10,20 +10,31 @@ env_logger = "*"
 lazy_static = "*"
 # log = "*"
 # logger = {git = "https://github.com/yuexclusive/rutils", package = "logger", branch = "dev"}
+base64 = "*" 
+bincode = "*" 
 futures = "*" # To be able to block on async functions if you are not using an async runtime
+jsonwebtoken = "*" 
+kafka = "*" 
 log = "*" 
 log4rs = {version = "*", features = ["all_components"]} 
 meilisearch-sdk = "*" 
 openssl = {version = "0", features = ["vendored"]} 
 redis = {version = "*", features = ["tokio-comp"]} 
+redis_encoding_derive = {path = "./redis_encoding_derive"} 
+regex = "*" 
 rocket = {version = "0.5.0-rc.2", features = ["secrets", "json"]} 
 serde = {version = "*", features = ["derive"]} 
 serde_json = "*" 
-sqlx = {version = "0.5", features = [
+sha2 = "*" 
+sqlx = {version = "0.6", features = [
   "runtime-tokio-native-tls",
-  "mysql",
+  "postgres",
+  "chrono",
 ]} 
 tokio = {version = "*", features = ["rt-multi-thread", "macros", "time"]} 
 toml = {version = "*"} 
-uuid = {version = "1", features = ["v4", "fast-rng", "macro-diagnostics"]}
-kafka = "*"
+uuid = {version = "1", features = ["v4", "fast-rng", "macro-diagnostics"]} 
+chrono = "*"
+rocket_contrib = "*"
+diesel = { version = "1.4.4", features = ["postgres"] }
+# chrono = "*"

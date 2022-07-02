@@ -7,77 +7,39 @@
         {
             "type": "lldb",
             "request": "launch",
-            "name": "Debug unit tests in library 'json'",
-            "cargo": {
-                "args": [
-                    "test",
-                    "--no-run",
-                    "--lib",
-                    "--package=json"
-                ],
-                "filter": {
-                    "name": "json",
-                    "kind": "lib"
-                }
-            },
-            "args": [],
-            "cwd": "${workspaceFolder}"
-        },
-        {
-            "type": "lldb",
-            "request": "launch",
-            "name": "Debug executable 'example'",
+            "name": "Debug executable 'rocket_demo'",
             "cargo": {
                 "args": [
                     "build",
-                    "--bin=example",
-                    "--package=example"
+                    "--bin=rocket_demo",
+                    "--package=rocket_demo"
                 ],
                 "filter": {
-                    "name": "example",
+                    "name": "rocket_demo",
                     "kind": "bin"
                 }
             },
             "args": [],
-            "cwd": "${workspaceFolder}"
+            "cwd": "${workspaceFolder}/rocket_demo"
         },
         {
             "type": "lldb",
             "request": "launch",
-            "name": "Debug unit tests in executable 'example'",
+            "name": "Debug unit tests in executable 'rocket_demo'",
             "cargo": {
                 "args": [
                     "test",
                     "--no-run",
-                    "--bin=example",
-                    "--package=example"
+                    "--bin=rocket_demo",
+                    "--package=rocket_demo"
                 ],
                 "filter": {
-                    "name": "example",
+                    "name": "rocket_demo",
                     "kind": "bin"
                 }
             },
             "args": [],
-            "cwd": "${workspaceFolder}"
-        },
-        {
-            "type": "lldb",
-            "request": "launch",
-            "name": "Debug unit tests in library 'time'",
-            "cargo": {
-                "args": [
-                    "test",
-                    "--no-run",
-                    "--lib",
-                    "--package=time"
-                ],
-                "filter": {
-                    "name": "time",
-                    "kind": "lib"
-                }
-            },
-            "args": [],
-            "cwd": "${workspaceFolder}"
+            "cwd": "${workspaceFolder}/rocket_demo"
         }
     ]
 }

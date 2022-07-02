@@ -5,7 +5,7 @@ use lazy_static::lazy_static;
 
 lazy_static! {
     pub static ref CONFIG: Config = {
-        let config_path = "./config.toml";
+        let config_path = "config.toml";
         let str = fs::read_to_string(config_path).unwrap();
         let config: Config = toml::from_str(&str).unwrap();
         config
@@ -19,7 +19,7 @@ pub struct Redis {
 }
 
 #[derive(Deserialize, Serialize)]
-pub struct Mysql {
+pub struct PG {
     pub address: String,
 }
 
@@ -32,7 +32,7 @@ pub struct MeiliSearch {
 #[derive(Deserialize, Serialize)]
 pub struct Config {
     pub name: String,
-    pub mysql: Mysql,
+    pub pg: PG,
     pub redis: Redis,
     pub meilisearch: MeiliSearch,
 }

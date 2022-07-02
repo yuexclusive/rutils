@@ -1,21 +1,30 @@
 use std::marker::PhantomData;
 
-use super::common::db::SqlResult;
-use super::common::db::{conn, tran};
-use crate::model::common::Pagination;
-use rocket::futures::FutureExt;
-use sqlx::{Executor, MySql};
+use crate::common::db::SqlResult;
+use crate::common::Pagination;
+use sqlx::{
+    types::chrono::{self},
+    Executor, Postgres,
+};
 
 #[derive(Debug)]
 pub struct User {
     pub id: i64,
+    pub r#type: i32, // 1. normal 2. admin
     pub email: String,
-    pub role_name: String,
+    pub name: Option<String>,
+    pub salt: String,
+    pub pwd: Option<String>,
+    pub mobile: Option<String>,
+    pub laston: Option<chrono::NaiveDateTime>,
+    pub created_at: chrono::NaiveDateTime,
+    pub updated_at: Option<chrono::NaiveDateTime>,
+    pub deleted_at: Option<chrono::NaiveDateTime>,
 }
 
 pub struct Dao<'a, E>
 where
-    E: Executor<'a, Database = MySql>,
+    E: Executor<'a, Database = Postgres>,
 {
     executor: E,
     _maker: PhantomData<&'a E>,
@@ -23,7 +32,7 @@ where
 
 impl<'a, E> Dao<'a, E>
 where
-    E: Executor<'a, Database = MySql>,
+    E: Executor<'a, Database = Postgres>,
 {
     pub fn new(e: E) -> Self {
         Self {
@@ -35,92 +44,130 @@ where
 
 impl<'a, E> Dao<'a, E>
 where
-    E: Executor<'a, Database = MySql>,
+    E: Executor<'a, Database = Postgres>,
 {
     pub async fn count(self) -> SqlResult<i64> {
         let res = sqlx::query!(
-            "select count(1) as count from  
-            `user` u 
-            join user_role_map urm on u.id =urm.user_id 
-            join `role` r on urm.role_id  = r.id "
+            r#"
+select
+    count(1) 
+from
+"user" u
+where u.deleted_at is null
+"#
         )
         .fetch_one(self.executor)
         .await?;
-        Ok(res.count)
+        Ok(res.count.unwrap())
     }
 
     pub async fn query(self, p: &Pagination) -> SqlResult<Vec<User>> {
         sqlx::query_as!(
             User,
-            "select u.id,u.email,r.name as role_name 
-        from `user` u 
-        join user_role_map urm on u.id =urm.user_id 
-        join `role` r on urm.role_id  = r.id  
-        limit ?,?",
-            p.skip(),
+            r#"
+select
+     *
+from "user" u
+where u.deleted_at is null
+order by u.id
+limit $1 offset $2
+"#,
             p.take(),
+            p.skip(),
         )
-        .map(|x| x)
         .fetch_all(self.executor)
         .await
     }
-    pub async fn first(self, id: i64) -> SqlResult<User> {
-        sqlx::query_as!(
+
+    pub async fn get(self, id: i64) -> SqlResult<User> {
+        let res = sqlx::query_as!(
             User,
-            "select u.id,u.email,r.name as role_name 
-            from `user` u 
-            join user_role_map urm on u.id =urm.user_id 
-            join `role` r on urm.role_id  = r.id
-        where u.id = ?",
-            id
+            r#"
+select
+     *
+from "user" 
+where id = $1
+            "#,
+            id,
         )
         .fetch_one(self.executor)
-        .await
+        .await?;
+
+        Ok(res)
     }
 
-    pub async fn last(self) -> SqlResult<User> {
-        sqlx::query_as!(
+    pub async fn get_by_email(self, email: &str) -> SqlResult<User> {
+        let res = sqlx::query_as!(
             User,
-            "select u.id,u.email,r.name as role_name 
-        from `user` u 
-        join user_role_map urm on u.id =urm.user_id 
-        join `role` r on urm.role_id  = r.id order by u.id desc limit 1"
+            r#"
+select
+     *
+from "user" 
+where email = $1
+            "#,
+            email,
         )
         .fetch_one(self.executor)
-        .await
+        .await?;
+
+        Ok(res)
     }
 
-    pub async fn insert(self, email: &str) -> SqlResult<u64> {
-        let id = uuid::Uuid::new_v4().to_string();
-        let res = sqlx::query!("insert into user(email,salt) values (?,?)", email, id)
-            .execute(self.executor)
-            .await?;
-
-        Ok(res.last_insert_id())
-    }
-
-    pub async fn insert_user_role_map(self, user_id: i64, role_id: i64) -> SqlResult<u64> {
+    pub async fn insert(
+        self,
+        email: &str,
+        salt: &str,
+        pwd: &str,
+        name: Option<&str>,
+        mobile: Option<&str>,
+    ) -> SqlResult<i64> {
+        let created_at = chrono::Local::now().naive_local();
         let res = sqlx::query!(
-            "insert into user_role_map(user_id,role_id) values (?,?)",
-            user_id,
-            role_id,
+            r#"insert into "user" (email,pwd,salt,name,mobile,created_at) values ($1,$2,$3,$4,$5,$6) RETURNING id"#,
+            email,
+            pwd,
+            salt,
+            name,
+            mobile,
+            created_at,
+        )
+        .fetch_one(self.executor)
+        .await?;
+
+        Ok(res.id)
+    }
+
+    pub async fn delete(self, ids: &[i64]) -> SqlResult<u64> {
+        let deleted_at = chrono::Local::now().naive_local();
+        let res = sqlx::query!(
+            r#"update "user" set deleted_at = $1 where id = ANY($2)"#,
+            deleted_at,
+            ids,
         )
         .execute(self.executor)
         .await?;
 
-        Ok(res.last_insert_id())
+        Ok(res.rows_affected())
     }
 
-    pub async fn update(self, id: i64, name: &str) -> SqlResult<u64> {
-        let res = sqlx::query!("update user set name=? where id in (?)", name, id)
-            .execute(self.executor)
-            .await?;
+    pub async fn update_pwd(self, id: i64, salt: &str, pwd: &str) -> SqlResult<u64> {
+        let updated_at = chrono::Local::now().naive_local();
+        let res = sqlx::query!(
+            r#"update "user" set salt = $1, pwd = $2, updated_at=$3 where id = $4"#,
+            salt,
+            pwd,
+            updated_at,
+            id,
+        )
+        .execute(self.executor)
+        .await?;
 
         Ok(res.rows_affected())
     }
 
-    pub async fn delete(self, id: i64) -> SqlResult<u64> {
-        let res = sqlx::query!("delete from user where id in (?)", id)
+    pub async fn update_laston(self, id: i64) -> SqlResult<u64> {
+        let laston = chrono::Local::now().naive_local();
+        let res = sqlx::query!(r#"update "user" set laston = $1 where id = $2"#, laston, id)
             .execute(self.executor)
             .await?;
 

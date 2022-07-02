@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  namespace: stateful
+  name: meilisearch
+spec:
+  serviceName: "meilisearch"
+  selector:
+    matchLabels:
+      app: meilisearch
+  template:
+    metadata:
+      labels:
+        app: meilisearch
+    spec:
+      containers:
+        - name: meilisearch
+          image: getmeili/meilisearch:latest
+          ports:
+            - containerPort: 7700
+          volumeMounts:
+            - name: meilisearch
+              mountPath: /meili_data
+  volumeClaimTemplates:
+    - metadata:
+        name: meilisearch
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        storageClassName: "standard"
+        resources:
+          requests:
+            storage: 1Gi
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: stateful
+  name: meilisearch
+spec:
+  selector:
+    app: meilisearch
+  ports:
+    - protocol: TCP
+      port: 7700
+      targetPort: 7700

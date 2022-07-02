@@ -1,7 +1,7 @@
 name = "rocket_demo"
 
-[mysql]
-address = "mysql://test:123@127.0.0.1:3306/evolve"
+[pg]
+address = "postgres://postgres:123456@127.0.0.1:5432/evolve"
 
 [meilisearch]
 address = "http://localhost:7700"
