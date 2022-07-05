@@ -25,9 +25,15 @@ data:
 
     insert into role(id,name,description) values (1,'adminstrator','');
 
+    create TYPE usertype AS ENUM (
+    'admin',
+    'normal',
+    'super_admin');
+
     drop table if exists "user";
     create table "user" (
       id serial8 primary key not null,
+      type usertype NOT NULL,
       email VARCHAR(255) NOT NULL,
       salt VARCHAR(255) NOT NULL,
       pwd VARCHAR(255) DEFAULT NULL,
@@ -41,8 +47,8 @@ data:
     );
     comment on table "user" is '用户表';
 
-    INSERT INTO "user"(id,email,salt,pwd,name,mobile,lastOn) 
-    VALUES (1,'453017973@qq.com','e18f5b2c-2df9-4d4d-aa96-b0edd7b2dd8b','86950062ba25c65a2695c3193f9c8bfa83587bc906e0bbe3e4b4e4f1ccec334b','super_admin','13100000000','2018-12-17 09:36:32');
+    INSERT INTO "user"(id,"type",email,salt,pwd,name,mobile,lastOn) 
+    VALUES (1,'super_admin','453017973@qq.com','e18f5b2c-2df9-4d4d-aa96-b0edd7b2dd8b','YGcGsiwMVp0tgce46cucdQ636K9KZ/hywep9X5kDV2i4Lql9L94pGv9bPrBZuLVezGV6haD1wXZnXSEujobCiQ==','super_admin','13100000000','2018-12-17 09:36:32');
 
 
     DROP TABLE IF EXISTS user_role_map;

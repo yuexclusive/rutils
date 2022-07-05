@@ -5,23 +5,30 @@ version = "0.1.0"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
-
 [dependencies]
-yew = { git = "https://github.com/yewstack/yew.git", features = ["csr"] }
-gloo-utils = "0.1"
-wasm-bindgen = "0.2"
+# yew = { git = "https://github.com/yewstack/yew.git", features = ["csr"] }
 chrono = "*"
-gloo-console = "0.2"
-js-sys = "0.3"
+gloo = "*"
+gloo-console = "*"
+gloo-net = "0.2.3"
+gloo-utils = "*"
+js-sys = "*"
+serde = {version = "*", features = ["derive"]}
+serde_json = "*"
+wasm-bindgen = "*"
+wasm-bindgen-futures = "*"
+yew = {git = "https://github.com/yewstack/yew.git", features = ["csr"]}
+yew-router = {git = "https://github.com/yewstack/yew.git"}
+log = "*"
 
 [dependencies.web-sys]
 version = "0.3"
 features = [
-    "Document",
-    "Element",
-    "Node",
-    "HtmlHeadElement",
-    "ShadowRoot",
-    "ShadowRootInit",
-    "ShadowRootMode",
+  "console",
+  "Headers",
+  "Request",
+  "RequestInit",
+  "RequestMode",
+  "Response",
+  "Window",
 ]

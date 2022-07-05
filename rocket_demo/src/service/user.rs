@@ -6,6 +6,7 @@ use crate::common::Pagination;
 use crate::dao::user as user_dao;
 use crate::dao::user::UserType;
 use jsonwebtoken::{decode, encode, Algorithm, DecodingKey, EncodingKey, Header, Validation};
+use lazy_static::__Deref;
 use redis::ToRedisArgs;
 use redis_encoding_derive::ToRedisArgs;
 use regex::Regex;
@@ -51,6 +52,7 @@ impl Service {
 
     fn check_pwd(pwd: &str, salt: &str, pwd_hashed: &str) -> BasicResult<()> {
         let pwd = Self::hash_password(pwd, salt);
+        let pwd = pwd.deref();
 
         if pwd != pwd_hashed {
             return Err("invalid password".to_basic_error());
@@ -141,7 +143,7 @@ impl Service {
 
     pub async fn update_pwd(&self, email: &str, old_pwd: &str, new_pwd: &str) -> BasicResult<u64> {
         Self::validate_pwd(old_pwd)?;
-        Self::validate_pwd(old_pwd)?;
+        Self::validate_pwd(new_pwd)?;
         if old_pwd == new_pwd {
             return Err(
                 "new password can not be the same as old password !!!".to_validation_error()

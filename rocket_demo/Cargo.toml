@@ -12,6 +12,8 @@ lazy_static = "*"
 # logger = {git = "https://github.com/yuexclusive/rutils", package = "logger", branch = "dev"}
 base64 = "*" 
 bincode = "*" 
+chrono = "*" 
+diesel = {version = "1.4.4", features = ["postgres"]} 
 futures = "*" # To be able to block on async functions if you are not using an async runtime
 jsonwebtoken = "*" 
 kafka = "*" 
@@ -23,6 +25,8 @@ redis = {version = "*", features = ["tokio-comp"]}
 redis_encoding_derive = {path = "./redis_encoding_derive"} 
 regex = "*" 
 rocket = {version = "0.5.0-rc.2", features = ["secrets", "json"]} 
+rocket_contrib = "*" 
+rocket_cors = {git = "https://github.com/lawliet89/rocket_cors", branch = "master"} 
 serde = {version = "*", features = ["derive"]} 
 serde_json = "*" 
 sha2 = "*" 
@@ -34,7 +38,4 @@ sqlx = {version = "0.6", features = [
 tokio = {version = "*", features = ["rt-multi-thread", "macros", "time"]} 
 toml = {version = "*"} 
 uuid = {version = "1", features = ["v4", "fast-rng", "macro-diagnostics"]} 
-chrono = "*"
-rocket_contrib = "*"
-diesel = { version = "1.4.4", features = ["postgres"] }
 # chrono = "*"

@@ -9,5 +9,5 @@ members = [
   # "./logger",
   # "./serde_demo",
   # "./example", # "./redis_demo",
-  # "./yew_app"
+  "./yew_app"
 ]
