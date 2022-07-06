@@ -1,11 +1,13 @@
 #![allow(unused)]
+use std::cell::RefCell;
 use std::ops::Deref;
 
 use gloo_net::http::Request;
 use serde::de::DeserializeOwned;
 use serde::{Deserialize, Serialize};
-use serde_json::json;
 use yew::prelude::*;
+use yew::virtual_dom::VNode;
+use yew::Properties;
 use yew_router::prelude::*;
 use yew_router::BrowserRouter;
 
@@ -13,10 +15,6 @@ macro_rules! log {
     ( $( $t:tt )* ) => {
         web_sys::console::log_1(&format!( $( $t )* ).into());
     }
-}
-
-struct UserComponent {
-    res: QueryRes,
 }
 
 const BASE_API_URL: &str = "http://localhost:8080";
@@ -31,52 +29,65 @@ where
     Ok(res)
 }
 
-enum Msg {
-    GetVal(QueryRes),
+pub struct UserListItem;
+
+#[derive(Clone, PartialEq, Properties)]
+pub struct UserListItemProps {
+    pub value: User,
+}
+
+impl Component for UserListItem {
+    type Message = ();
+    type Properties = UserListItemProps;
+
+    fn create(_ctx: &Context<Self>) -> Self {
+        Self
+    }
+
+    fn view(&self, ctx: &Context<Self>) -> Html {
+        let x = &ctx.props().value;
+        html! {
+            <div class="row">
+            <div class="col">{ x.r#type.deref()}</div>
+            <div class="col">{ x.email.deref()}</div>
+            <div class="col">{ x.name.as_deref().unwrap_or("")}</div>
+            <div class="col">{ x.mobile.as_deref().unwrap_or("")}</div>
+            <div class="col">{ x.laston.as_deref().unwrap_or("")}</div>
+            <div class="col">{ x.created_at.deref()}</div>
+            <div class="col">{ x.updated_at.as_deref().unwrap_or("")}</div>
+            </div>
+        }
+    }
+}
+
+pub struct UserList;
+
+pub enum Msg {
+    GetVal(PageData),
     GetError,
     GetMarkdown,
 }
 
-// #[derive(Serialize, Component)]
-#[derive(Deserialize, Debug)]
-pub struct User {
-    id: i64,
-    r#type: String,
-    email: String,
-    name: Option<String>,
-    mobile: Option<String>,
-    laston: Option<String>,
-    created_at: String,
-    updated_at: Option<String>,
+#[derive(Clone, PartialEq, Properties)]
+pub struct UserListProps {
+    pub page_data: RefCell<PageData>,
+    // pub children: ChildrenWithProps<UserListItem>,
 }
 
-#[derive(Deserialize, Debug)]
-pub struct QueryRes {
-    data: Vec<User>,
-    total: i64,
-    code: String,
-}
-
-impl Component for UserComponent {
+impl Component for UserList {
     type Message = Msg;
 
-    type Properties = ();
+    type Properties = UserListProps;
 
     fn create(ctx: &Context<Self>) -> Self {
-        Self {
-            res: QueryRes {
-                data: Vec::new(),
-                total: 0,
-                code: String::from(""),
-            },
-        }
+        Self
     }
 
     fn update(&mut self, ctx: &Context<Self>, msg: Self::Message) -> bool {
         match msg {
             Msg::GetMarkdown => {
                 ctx.link().send_future(async {
-                    match get::<QueryRes>("/user/query?index=1&size=10").await {
+                    match get::<PageData>("/user/query?index=1&size=10").await {
                         Ok(md) => Msg::GetVal(md),
                         Err(err) => Msg::GetError,
                     }
@@ -85,7 +96,8 @@ impl Component for UserComponent {
             }
             Msg::GetError => false,
             Msg::GetVal(s) => {
-                self.res = s;
+                *ctx.props().page_data.borrow_mut() = s;
+                // self.page_data = s;
                 true
             }
         }
@@ -98,65 +110,77 @@ impl Component for UserComponent {
     }
 
     fn view(&self, ctx: &Context<Self>) -> Html {
-        let data = &self.res.data;
         html! {
-            <>
-                <div class="container">
-                <div class="row">
-                <div class="col">{"type"}</div>
-                <div class="col">{"email"}</div>
-                <div class="col">{"name"}</div>
-                <div class="col">{"mobile"}</div>
-                <div class="col">{"laston"}</div>
-                <div class="col">{"created_at"}</div>
-                <div class="col">{"updated_at"}</div>
-                </div>
-                {
-                    data.iter().map(|x| {
-                    html!{
+                        <div class="container">
                         <div class="row">
-                        <div class="col">{ x.r#type.deref()}</div>
-                        <div class="col">{ x.email.deref()}</div>
-                        <div class="col">{ x.name.as_deref().unwrap_or("")}</div>
-                        <div class="col">{ x.mobile.as_deref().unwrap_or("")}</div>
-                        <div class="col">{ x.laston.as_deref().unwrap_or("")}</div>
-                        <div class="col">{ x.created_at.deref()}</div>
-                        <div class="col">{ x.updated_at.as_deref().unwrap_or("")}</div>
+                        <div class="col">{"type"}</div>
+                        <div class="col">{"email"}</div>
+                        <div class="col">{"name"}</div>
+                        <div class="col">{"mobile"}</div>
+                        <div class="col">{"laston"}</div>
+                        <div class="col">{"created_at"}</div>
+                        <div class="col">{"updated_at"}</div>
                         </div>
-                    }
-                    }).collect::<Html>()
+        {
+            ctx.props()
+            .page_data
+            .borrow()
+            .data
+            .iter()
+            .map(|x| {
+                html! {
+                    <UserListItem value = {x.clone()}/>
                 }
-                </div>
+            })
+            .collect::<Html>()
+        }
 
-                <nav aria-label="Page navigation example">
+                        <nav aria-label="Page navigation example">
                 <ul class="pagination">
                     <li class="page-item">
-                    <a class="page-link" href="#" aria-label="Previous">
+                    <a class="page-link"  aria-label="Previous">
                         <span aria-hidden="true">{"<"}</span>
                     </a>
                     </li>
-                    <li class="page-item"><a class="page-link" href="#">{1}</a></li>
-                    <li class="page-item"><a class="page-link" href="#">{2}</a></li>
-                    <li class="page-item"><a class="page-link" href="#">{3}</a></li>
+                    <li class="page-item"><a class="page-link" >{1}</a></li>
+                    <li class="page-item"><a class="page-link" >{2}</a></li>
+                    <li class="page-item"><a class="page-link" >{3}</a></li>
                     <li class="page-item">
-                    <a class="page-link" href="#" aria-label="Next">
+                    <a class="page-link"  aria-label="Next">
                         <span aria-hidden="true">{">"}</span>
                     </a>
                     </li>
                 </ul>
                 </nav>
-            </>
-        }
+
+                        </div>
+                }
     }
 }
 
+#[derive(Deserialize, PartialEq, Clone)]
+pub struct PageData {
+    pub data: Vec<User>,
+    pub total: i64,
+    pub code: String,
+}
+// #[derive(Serialize, Component)]
+#[derive(Deserialize, PartialEq, Clone)]
+pub struct User {
+    id: i64,
+    r#type: String,
+    email: String,
+    name: Option<String>,
+    mobile: Option<String>,
+    laston: Option<String>,
+    created_at: String,
+    updated_at: Option<String>,
+}
 
 #[derive(Clone, Routable, PartialEq)]
 enum Route {
     #[at("/")]
     User,
-    #[at("/secure")]
-    Secure,
     // #[at("/hello")]
     // Hello,
     #[not_found]
@@ -164,28 +188,19 @@ enum Route {
     NotFound,
 }
 
-#[function_component(Secure)]
-fn secure() -> Html {
-    let navigator = use_navigator().unwrap();
-
-    let onclick = Callback::from(move |_| navigator.push(&Route::User));
-    html! {
-        <div>
-            <h1>{ "Secure" }</h1>
-            <button {onclick}>{ "Go Home" }</button>
-        </div>
-    }
-}
-
-fn switch(routes: Route) -> Html {
+fn switch(routes: Route) -> VNode {
     match routes {
-        // Route::Home => html! { <h1>{ "Home" }</h1> },
-        Route::User => html! {
-            <UserComponent />
-        },
-        Route::Secure => html! {
-            <Secure />
-        },
+        Route::User => {
+            html! {
+                <UserList page_data = {
+                    RefCell::new(PageData {
+                        data: Vec::new(),
+                        total: 0,
+                        code: String::from(""),
+                    })
+                }/>
+            }
+        }
         Route::NotFound => html! { <h1>{ "404" }</h1> },
     }
 }
