@@ -1,4 +1,4 @@
-use crate::common::error;
+use crate::common::{error, Pagination};
 use rocket::http::Status;
 use rocket::response::status;
 use rocket::serde::{json::Json, Serialize};
@@ -25,7 +25,13 @@ where
     #[serde(skip_serializing_if = "Option::is_none")]
     code: Option<Code>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    total: Option<i64>,
+    page: Option<Page>,
+}
+#[derive(Serialize)]
+pub struct Page {
+    pub total: i64,
+    pub index: i64,
+    pub size: i64,
 }
 
 pub type JsonResult<T> = status::Custom<Json<ResultData<T>>>;
@@ -35,7 +41,7 @@ pub fn result<T>(
     code: Option<Code>,
     msg: Option<String>,
     data: Option<T>,
-    total: Option<i64>,
+    page: Option<Page>,
 ) -> JsonResult<T>
 where
     T: Serialize,
@@ -44,7 +50,7 @@ where
         data,
         msg,
         code,
-        total,
+        page,
     };
     status::Custom(status, Json(res))
 }
@@ -70,11 +76,21 @@ where
     result(Status::Ok, Some(Code::Ok), None, Some(data), None)
 }
 
-pub fn ok_with_data_pagination<T>(data: T, total: i64) -> JsonResult<T>
+pub fn ok_with_data_pagination<T>(data: T, total: i64, p: Pagination) -> JsonResult<T>
 where
     T: Serialize,
 {
-    result(Status::Ok, Some(Code::Ok), None, Some(data), Some(total))
+    result(
+        Status::Ok,
+        Some(Code::Ok),
+        None,
+        Some(data),
+        Some(Page {
+            total: total,
+            index: p.index,
+            size: p.size,
+        }),
+    )
 }
 
 pub fn error<T>(err: error::ErrorKind) -> JsonResult<T>

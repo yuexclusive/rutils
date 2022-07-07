@@ -23,7 +23,7 @@ impl std::error::Error for ErrorKind {}
 
 impl From<sqlx::Error> for ErrorKind {
     fn from(err: sqlx::Error) -> Self {
-        ErrorKind::OtherError(err.as_database_error().unwrap().to_string())
+        ErrorKind::OtherError(format! {"{}",err})
     }
 }
 
@@ -62,8 +62,7 @@ pub trait ToError {
     fn to_validation_error(&self) -> ErrorKind;
 }
 
-impl ToError for &str
-{
+impl ToError for &str {
     fn to_basic_error(&self) -> ErrorKind {
         ErrorKind::BasicError(self.to_string())
     }

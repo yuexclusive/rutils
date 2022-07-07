@@ -1,4 +1,4 @@
-use crate::common::db::conn;
+use crate::common::db::CONN;
 use crate::common::error::ToError;
 use crate::common::redis_util;
 use crate::common::BasicResult;
@@ -90,12 +90,13 @@ impl Service {
 
 impl Service {
     pub async fn query(&self, page: &Pagination) -> BasicResult<(Vec<user_dao::User>, i64)> {
-        let e1 = &conn().await?;
-        let e2 = &conn().await?;
-        let (data, count) = tokio::join!(
-            user_dao::Dao::new(e1).query(page),
-            user_dao::Dao::new(e2).count()
-        );
+        let e1 = CONN.get().await;
+        let e2 = CONN.get().await;
+        let d1 = user_dao::Dao::new(e1);
+        let d2 = user_dao::Dao::new(e2);
+        let f1 = d1.query(page);
+        let f2 = d2.count();
+        let (data, count) = tokio::join!(f1, f2);
         let data = data?;
         let count = count?;
 
@@ -103,12 +104,12 @@ impl Service {
     }
 
     pub async fn get(&self, id: i64) -> BasicResult<user_dao::User> {
-        let res = user_dao::Dao::new(&conn().await?).get(id).await?;
+        let res = user_dao::Dao::new(CONN.get().await).get(id).await?;
         Ok(res)
     }
 
     pub async fn get_by_email(&self, email: &str) -> BasicResult<user_dao::User> {
-        let res = user_dao::Dao::new(&conn().await?)
+        let res = user_dao::Dao::new(CONN.get().await)
             .get_by_email(email)
             .await?;
         Ok(res)
@@ -128,7 +129,7 @@ impl Service {
         Self::validate_pwd(pwd)?;
         let salt = Self::salt();
         let pwd = Self::hash_password(pwd, &salt);
-        let insert_id = user_dao::Dao::new(&conn().await?)
+        let insert_id = user_dao::Dao::new(CONN.get().await)
             .insert(email, &salt, &pwd, name, mobile)
             .await?;
 
@@ -136,7 +137,7 @@ impl Service {
     }
 
     pub async fn delete(&self, ids: &[i64]) -> BasicResult<u64> {
-        let res = user_dao::Dao::new(&conn().await?).delete(ids).await?;
+        let res = user_dao::Dao::new(CONN.get().await).delete(ids).await?;
 
         Ok(res)
     }
@@ -155,7 +156,7 @@ impl Service {
 
         let salt = Self::salt();
         let pwd = Self::hash_password(new_pwd, &salt);
-        let res = user_dao::Dao::new(&conn().await?)
+        let res = user_dao::Dao::new(CONN.get().await)
             .update_pwd(user.id, &salt, &pwd)
             .await?;
 
@@ -167,7 +168,7 @@ impl Service {
 
         Self::check_pwd(pwd, &user.salt, &user.pwd.unwrap_or_default())?;
 
-        user_dao::Dao::new(&conn().await?)
+        user_dao::Dao::new(CONN.get().await)
             .update_laston(user.id)
             .await?;
 
@@ -316,7 +317,7 @@ mod tests {
 
     // #[tokio::test]
     // async fn test_delete() -> SqlResult<()> {
-    //     let res = Dao::new(&conn().await?).delete(&[3, 5]).await?;
+    //     let res = Dao::new(CONN.get().await).delete(&[3, 5]).await?;
 
     //     println!("rows_affected: {}", res);
 

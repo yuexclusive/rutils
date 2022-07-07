@@ -35,7 +35,7 @@ pub async fn query(page: Pagination) -> JsonResult<Vec<User>> {
                     updated_at: x.updated_at.map(|x| x.to_string()),
                 })
             });
-            ok_with_data_pagination(res, data.1)
+            ok_with_data_pagination(res, data.1, page)
         }
         Err(err) => error(err),
     }

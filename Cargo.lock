@@ -140,6 +140,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "async_once"
+version = "0.2.6"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "2ce4f10ea3abcd6617873bae9f91d1c5332b4a778bd9ce34d0cd517474c1de82"
+
+[[package]]
 name = "atoi"
 version = "1.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2521,6 +2527,7 @@ dependencies = [
 name = "rocket_demo"
 version = "0.1.0"
 dependencies = [
+ "async_once",
  "base64 0.13.0",
  "bincode",
  "chrono",
@@ -3659,6 +3666,17 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "6a89911bd99e5f3659ec4acf9c4d93b0a90fe4a2a11f15328472058edc5261be"
 
 [[package]]
+name = "wasm-logger"
+version = "0.2.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "074649a66bb306c8f2068c9016395fa65d8e08d2affcbf95acf3c24c3ab19718"
+dependencies = [
+ "log 0.4.17",
+ "wasm-bindgen",
+ "web-sys",
+]
+
+[[package]]
 name = "web-sys"
 version = "0.3.58"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3866,8 +3884,10 @@ name = "yew_app"
 version = "0.1.0"
 dependencies = [
  "gloo-net",
+ "log 0.4.17",
  "serde",
  "wasm-bindgen",
+ "wasm-logger",
  "web-sys",
  "yew",
  "yew-router",

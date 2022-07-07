@@ -1,16 +1,23 @@
 use crate::config;
+use async_once::AsyncOnce;
+use lazy_static::lazy_static;
 use sqlx::{Pool, Postgres, Transaction};
 use std::result::Result;
 
 pub type SqlResult<T, E = sqlx::Error> = Result<T, E>;
 
-pub async fn conn() -> SqlResult<Pool<Postgres>> {
-    sqlx::postgres::PgPoolOptions::new()
-        .test_before_acquire(false)
-        .connect(&config::CONFIG.pg.address)
-        .await
-}
+pub type Executor = Pool<Postgres>;
 
 pub async fn tran<'a>() -> SqlResult<Transaction<'a, Postgres>> {
-    conn().await?.begin().await
+    CONN.get().await.begin().await
+}
+
+lazy_static! {
+    pub static ref CONN: AsyncOnce<Pool<Postgres>> = AsyncOnce::new(async {
+        sqlx::postgres::PgPoolOptions::new()
+            .test_before_acquire(false)
+            .connect(&config::CONFIG.pg.address)
+            .await
+            .unwrap()
+    });
 }

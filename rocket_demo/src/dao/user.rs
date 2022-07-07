@@ -1,16 +1,13 @@
-use std::marker::PhantomData;
-
-use crate::common::db::SqlResult;
+use crate::common::db::{Executor, SqlResult};
 use crate::common::Pagination;
 use serde::{Deserialize, Serialize};
 use sqlx::{
     types::chrono::{self},
-    Executor, Postgres,
 };
 
 #[derive(sqlx::Type, Debug, Serialize, Deserialize)]
 #[sqlx(rename_all = "snake_case")]
-#[serde(rename_all(serialize = "snake_case",deserialize = "snake_case"))]
+#[serde(rename_all(serialize = "snake_case", deserialize = "snake_case"))]
 pub enum UserType {
     Normal,
     Admin,
@@ -48,31 +45,18 @@ pub struct User {
     pub deleted_at: Option<chrono::NaiveDateTime>,
 }
 
-pub struct Dao<'a, E>
-where
-    E: Executor<'a, Database = Postgres>,
-{
-    executor: E,
-    _maker: PhantomData<&'a E>,
+pub struct Dao<'a> {
+    executor: &'a Executor,
 }
 
-impl<'a, E> Dao<'a, E>
-where
-    E: Executor<'a, Database = Postgres>,
-{
-    pub fn new(e: E) -> Self {
-        Self {
-            executor: e,
-            _maker: PhantomData,
-        }
+impl<'a> Dao<'a> {
+    pub fn new(executor: &'a Executor) -> Self {
+        Self { executor }
     }
 }
 
-impl<'a, E> Dao<'a, E>
-where
-    E: Executor<'a, Database = Postgres>,
-{
-    pub async fn count(self) -> SqlResult<i64> {
+impl<'a> Dao<'a> {
+    pub async fn count(&self) -> SqlResult<i64> {
         let res = sqlx::query!(
             r#"
 select
@@ -87,7 +71,7 @@ where u.deleted_at is null
         Ok(res.count.unwrap())
     }
 
-    pub async fn query(self, p: &Pagination) -> SqlResult<Vec<User>> {
+    pub async fn query(&self, p: &Pagination) -> SqlResult<Vec<User>> {
         sqlx::query_as!(
             User,
             r#"
@@ -115,7 +99,7 @@ limit $1 offset $2
         .await
     }
 
-    pub async fn get(self, id: i64) -> SqlResult<User> {
+    pub async fn get(&self, id: i64) -> SqlResult<User> {
         let res = sqlx::query_as!(
             User,
             r#"
@@ -142,7 +126,7 @@ where id = $1
         Ok(res)
     }
 
-    pub async fn get_by_email(self, email: &str) -> SqlResult<User> {
+    pub async fn get_by_email(&self, email: &str) -> SqlResult<User> {
         let res = sqlx::query_as!(
             User,
             r#"

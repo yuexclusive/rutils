@@ -38,4 +38,5 @@ sqlx = {version = "0.6", features = [
 tokio = {version = "*", features = ["rt-multi-thread", "macros", "time"]} 
 toml = {version = "*"} 
 uuid = {version = "1", features = ["v4", "fast-rng", "macro-diagnostics"]} 
+async_once = "*"
 # chrono = "*"

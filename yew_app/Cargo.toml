@@ -20,6 +20,8 @@ wasm-bindgen = "*"
 # wasm-bindgen-futures = "*"
 yew = {git = "https://github.com/yewstack/yew.git", features = ["csr"]}
 yew-router = {git = "https://github.com/yewstack/yew.git"}
+wasm-logger = "*"
+log = "*"
 
 [dependencies.web-sys]
 features = [
